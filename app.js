@@ -90,7 +90,7 @@ function timeline(date,title,desc){
 function shell(){
  return `<div class="app"><div class="overlay" id="overlay"></div><aside class="sidebar" id="sidebar">
   <div class="brand"><div class="brand-mark">G</div><div><div class="brand-title">Growatt Product Center</div><div class="brand-sub">Product Knowledge Platform</div></div></div>
-  <div id="nav"></div><div class="sidebar-footer">V1.1 · Phase 1<br>Residential-first foundation</div>
+  <div id="nav"></div><div class="sidebar-footer">V1.2 · Leadership Preview<br>Residential-first foundation</div>
  </aside><main class="main"><header class="topbar">
   <button class="mobile-menu" id="mobileMenu">☰</button><div class="search-wrap"><span class="search-icon">⌕</span>
   <input id="search" class="search" placeholder="${L[lang].search}"><span class="kbd">/</span><div id="searchResults" class="search-results"></div></div>
@@ -102,7 +102,7 @@ function renderNav(){
  document.querySelectorAll(".nav-item").forEach(el=>el.onclick=()=>go(el.dataset.page));
 }
 function head(id){
- return `<div class="breadcrumb">Growatt Product Center / ${L[lang][id]}</div><div class="page-head"><div><h1>${L[lang][id]}</h1><p>${descriptions[id][lang==="zh"?0:1]}</p></div>${badge("V1.1")}</div>`;
+ return `<div class="breadcrumb">Growatt Product Center / ${L[lang][id]}</div><div class="page-head"><div><h1>${L[lang][id]}</h1><p>${descriptions[id][lang==="zh"?0:1]}</p></div>${badge("V1.2")}</div>`;
 }
 function homePage(){
  const zh=lang==="zh";
@@ -166,6 +166,22 @@ function devicesPage(){
  </tbody></table></div></section>
  <section class="section grid grid-4">${quick("📊","Monitoring",zh?"实时数据、历史和统计":"Realtime, history and statistics","capability")}${quick("🎛","Control",zh?"参数、模式和计划":"Parameters, modes and schedules","capability")}${quick("⚠","Alarm",zh?"告警模型和排查":"Alarm model and troubleshooting","schema")}${quick("⬆","OTA",zh?"固件资格和灰度":"Firmware eligibility and rollout","enablement")}</section>`;
 }
+
+function shinephonePage(){
+ const zh=lang==="zh";
+ return `${head("shinephone")}
+ <section class="section grid grid-2"><div class="card"><h3>${zh?"产品定位":"Product Positioning"}</h3><p>${zh?"新版 ShinePhone 是面向户用终端用户与经销商的统一移动端入口，承载电站监控、设备控制、能源管理、告警、服务与账号能力。":"New ShinePhone is the unified mobile entry for residential end users and dealers, covering plant monitoring, device control, energy management, alarms, services, and account capabilities."}</p></div>
+ <div class="card"><h3>${zh?"建设原则":"Build Principles"}</h3><p>${zh?"完全重构、兼容旧版核心能力；页面与参数根据用户设备、型号、固件、Capability 与 Schema 动态生成。":"Rebuilt from the ground up while preserving core legacy capabilities; UI and parameters are dynamically driven by devices, models, firmware, capabilities, and schema."}</p></div></section>
+ <section class="section"><div class="section-head"><div><h2>${zh?"核心用户与入口":"Core Users & Entry Points"}</h2></div></div><div class="grid grid-3">
+ ${quick("🏠",zh?"终端用户":"End Users",zh?"查看电站、能源、设备与告警，并完成日常控制。":"Monitor plants, energy, devices and alarms, and perform daily controls.","shinephone")}
+ ${quick("♙",zh?"经销商/安装商":"Dealers / Installers",zh?"协助客户建站、设备接入、基础诊断和权限协作。":"Support plant setup, device onboarding, basic diagnosis and permissions.","dealer")}
+ ${quick("🌐",zh?"Web 协同":"Web Collaboration",zh?"ShineServer 作为户用 Web 入口，与 App 共享核心能力。":"ShineServer is the residential Web entry and shares core capabilities with the App.","web")}</div></section>
+ <section class="section card"><div class="section-head"><div><h2>${zh?"功能结构":"Feature Architecture"}</h2><p>${zh?"实际功能与数据根据用户所拥有的设备动态决定。":"Actual functions and data are determined dynamically by the user’s devices."}</p></div></div>
+ <div class="grid grid-4">${quick("📊",zh?"监控与分析":"Monitoring & Analytics",zh?"实时数据、历史曲线、能量流与收益。":"Realtime data, history, energy flow and revenue.","capability")}${quick("🎛",zh?"设备控制":"Device Control",zh?"工作模式、SOC、充放电和计划。":"Modes, SOC, charge/discharge and schedules.","capability")}${quick("⚠",zh?"告警与服务":"Alarms & Service",zh?"告警详情、排查建议与服务入口。":"Alarm details, troubleshooting guidance and service entry.","schema")}${quick("👤",zh?"账号与电站":"Account & Plant",zh?"登录地区、账号、电站、分享与权限。":"Login region, account, plant, sharing and permissions.","migration")}</div></section>
+ <section class="section card"><div class="section-head"><div><h2>${zh?"当前重点问题":"Current Focus"}</h2></div></div><div class="callout">${zh?"账号与数据按地区服务器隔离，后端不支持跨区搜索。当前版本通过登录地区提示、异常排查与无电站帮助入口降低误选地区带来的登录和数据困惑；长期需要建设账号平台能力。":"Accounts and data are isolated by regional servers and cross-region lookup is not supported. The current release mitigates confusion through region guidance, troubleshooting and no-plant help; the long-term direction is an account platform capability."}</div></section>
+ <section class="section grid grid-3">${quick("◇",zh?"设备兼容":"Device Compatibility",zh?"SPM、WIT、SPH、MINA 等机型能力与参数存在差异。":"Models such as SPM, WIT, SPH and MINA differ in capabilities and parameters.","devices")}${quick("+",zh?"新设备接入":"New Device Enablement",zh?"Device Type、Schema、Capability、测试与区域验证。":"Device type, schema, capability, testing and regional validation.","enablement")}${quick("⇄",zh?"迁移与旧版治理":"Migration & Legacy Governance",zh?"迁移、回滚、维护边界和旧版退场。":"Migration, rollback, maintenance boundary and retirement.","migration")}</section>`;
+}
+
 function generic(id,cards){
  return `${head(id)}<div class="grid grid-3">${cards.map(c=>quick(c[0],c[1],c[2],c[3]||id)).join("")}</div>`;
 }
@@ -179,14 +195,14 @@ function migrationPage(){
 }
 function roadmapPage(){
  const zh=lang==="zh";
- return `${head("roadmap")}<div class="card timeline">${timeline("2026 Q3",zh?"V1.1 第一阶段完善":"V1.1 Phase One",zh?"首页、导航、产品组合、平台和设备中心。":"Home, navigation, portfolio, platform and device center.")}${timeline("2026 Q4",zh?"真实资料导入":"Production Content Integration",zh?"Handbook、设备矩阵、兼容清单和 Release Notes。":"Handbook, device matrix, compatibility and release notes.")}${timeline("2027 Q1","AI Product Assistant",zh?"自然语言搜索、设备对比和文档问答。":"Natural language search, device comparison and document Q&A.")}</div>`;
+ return `${head("roadmap")}<div class="card timeline">${timeline("2026 Q3",zh?"V1.2 汇报版与内容深化":"V1.1 Phase One",zh?"首页、导航、产品组合、平台和设备中心。":"Home, navigation, portfolio, platform and device center.")}${timeline("2026 Q4",zh?"真实资料导入":"Production Content Integration",zh?"Handbook、设备矩阵、兼容清单和 Release Notes。":"Handbook, device matrix, compatibility and release notes.")}${timeline("2027 Q1","AI Product Assistant",zh?"自然语言搜索、设备对比和文档问答。":"Natural language search, device comparison and document Q&A.")}</div>`;
 }
-function updatesPage(){return `${head("updates")}<div class="card timeline">${timeline("2026-07-19","GPC V1.1","Phase-one content and navigation upgraded.")}${timeline("2026-07-18","Login Region Experience","Added region consistency guidance and no-plant troubleshooting.")}${timeline("2026-07-17","Residential IA V3","Reorganized around current, legacy, migration, edge EMS and governance.")}</div>`;}
+function updatesPage(){return `${head("updates")}<div class="card timeline">${timeline("2026-07-19","GPC V1.2","Phase-one content and navigation upgraded.")}${timeline("2026-07-18","Login Region Experience","Added region consistency guidance and no-plant troubleshooting.")}${timeline("2026-07-17","Residential IA V3","Reorganized around current, legacy, migration, edge EMS and governance.")}</div>`;}
 function renderPage(){
  const zh=lang==="zh";
  const views={
   home:homePage,portfolio:portfolioPage,residential:residentialPage,platform:platformPage,devices:devicesPage,migration:migrationPage,roadmap:roadmapPage,updates:updatesPage,
-  shinephone:()=>generic("shinephone",[["👤",zh?"目标用户":"Target Users",zh?"终端用户、经销商和安装商":"End users, dealers and installers"],["⚙",zh?"核心能力":"Core Capabilities",zh?"监控、控制、能量、告警和 OTA":"Monitoring, control, energy, alarm and OTA"],["◇",zh?"设备驱动 UI":"Device-driven UI",zh?"根据 Capability 和 Schema 动态展示":"Dynamic UI based on capability and schema"]]),
+  shinephone:shinephonePage,
   web:()=>generic("web",[["📈","Monitoring","Realtime and historical data"],["🎛","Control","Shared control capabilities with App"],["⚡","Energy","Energy flow and analysis"],["⚠","Alarm","Alarm overview and handling"],["👤","Account","User, plant and sharing"],["◇","Device","Device status and compatibility"]]),
   legacy:()=>generic("legacy",[["🛠","Maintenance First","Bug fixes, compliance and critical stability"],["⛔","No Routine Features","No routine standalone feature development"],["⚖","Exception Review","Exceptions require product review"],["⇄","Migration Support","Guide users and data to new products"],["📉","Retirement Metrics","Track usage decline and remaining users"],["📘","Lifecycle","Status, owner, scope and lifecycle"]]),
   dealer:()=>generic("dealer",[["♙","Dealer Organization","Organization and role management"],["👤","Customer Management","Customer and account relationship"],["🏠","Plant Management","Residential plant portfolio"],["🔧","Installation","Binding and commissioning workflow"],["🔐","Permissions","Dealer-user collaboration and access"],["🛠","Basic O&M","Basic residential diagnostics"]]),
