@@ -5,14 +5,14 @@ const L={
   home:"首页", portfolio:"产品组合", residential:"户用数字产品线", shinephone:"新版 ShinePhone", web:"户用 Web Portal",
   legacy:"旧版产品", migration:"迁移中心", dealer:"经销商与安装商", edge:"户用边缘 EMS", platform:"平台架构",
   devices:"设备中心", capability:"能力中心", schema:"Device Schema", enablement:"新品兼容", governance:"产品治理",
-  metrics:"指标中心", roadmap:"产品路线图", updates:"最近更新", reference:"参考资料", faq:"FAQ"
+  metrics:"指标中心", roadmap:"产品路线图", updates:"最近更新", handbook:"产品手册", compatibility:"兼容矩阵", reference:"参考资料", faq:"FAQ"
  },
  en:{
   search:"Search products, devices, capabilities or docs", openResidential:"Open Residential Product Line", browseDevices:"Browse Device Center",
   home:"Home", portfolio:"Product Portfolio", residential:"Residential Product Line", shinephone:"New ShinePhone", web:"Residential Web Portal",
   legacy:"Legacy Products", migration:"Migration Center", dealer:"Dealer & Installer", edge:"Home Edge EMS", platform:"Platform Architecture",
   devices:"Device Center", capability:"Capability Center", schema:"Device Schema", enablement:"New Device Enablement", governance:"Product Governance",
-  metrics:"Metrics Center", roadmap:"Product Roadmap", updates:"Latest Updates", reference:"Reference", faq:"FAQ"
+  metrics:"Metrics Center", roadmap:"Product Roadmap", updates:"Latest Updates", handbook:"Product Handbook", compatibility:"Compatibility Matrix", reference:"Reference", faq:"FAQ"
  }
 };
 let lang=localStorage.getItem("gpc-lang")||"zh";
@@ -23,7 +23,8 @@ const nav=[
  ["Overview",[["home","⌂"],["portfolio","▦"],["roadmap","↗"],["updates","◷"]]],
  ["Residential",[["residential","⌂"],["shinephone","◉"],["web","▤"],["legacy","◌"],["migration","⇄"],["dealer","♙"],["edge","⚡"]]],
  ["Platform & Device",[["platform","☁"],["devices","◇"],["capability","✦"],["schema","⌘"],["enablement","+"]]],
- ["Governance",[["governance","✓"],["metrics","▥"],["reference","≡"],["faq","?"]]]
+ ["Knowledge",[["handbook","📘"],["compatibility","▦"],["reference","≡"]]],
+ ["Governance",[["governance","✓"],["metrics","▥"],["faq","?"]]]
 ];
 const descriptions={
  home:["统一承载产品知识、产品组合、设备能力、迁移治理与路线图。","A unified workspace for product knowledge, portfolio, device capability, migration governance, and roadmaps."],
@@ -44,6 +45,8 @@ const descriptions={
  metrics:["围绕迁移、稳定性、核心流程、兼容性与业务价值建立指标体系。","Metrics across migration, stability, core flows, compatibility, and business value."],
  roadmap:["统一呈现阶段目标、版本节奏和关键依赖。","A unified view of stage goals, release cadence, and dependencies."],
  updates:["记录产品、平台、设备和文档的近期变化。","Tracks recent changes across products, platform, devices, and documentation."],
+ handbook:["将产品定位、当前功能、兼容机型与统一设备体系沉淀为可浏览的正文。","Browse product positioning, current capabilities, compatible models, and unified device architecture."],
+ compatibility:["基于真实兼容清单查看机型、DTC、监控场景、区域验收与功能覆盖。","Browse real compatibility data by model, DTC, monitoring scenario, region validation, and feature coverage."],
  reference:["集中管理 Handbook、PRD、规范、流程图、发布说明与 FAQ。","Centralized handbook, PRD, standards, flows, release notes, and FAQ."],
  faq:["常见产品、平台、设备和治理问题的统一入口。","Unified answers for common product, platform, device, and governance questions."]
 };
@@ -83,7 +86,7 @@ const searchIndex=[
  ["migration","Migration Center","账号 电站 设备 历史数据"],["edge","Home Edge EMS","本地控制 能源策略 智能调度"],
  ["devices","Device Center","SPM WIT SPH MINA MIN MOD"],["capability","Capability Center","Monitoring Control Alarm OTA Energy"],
  ["schema","Device Schema","Telemetry Parameter Alarm Control"],["enablement","New Device Enablement","Capability Schema Test Region Launch"],
- ["metrics","Metrics Center","Migration Stability Core Flow Compatibility Business"],["updates","GPC V1.4","Leadership Preview release notes"],["governance","Product Governance","RACI ownership responsibility"],["reference","Product Handbook PRD Release Notes","Handbook PRD compatibility matrix process"],["residential","Users and Roles","End User Dealer Installer Product R&D Regional Team"]
+ ["metrics","Metrics Center","Migration Stability Core Flow Compatibility Business"],["updates","GPC V1.5","Leadership Preview release notes"],["governance","Product Governance","RACI ownership responsibility"],["handbook","New ShinePhone Product Handbook","产品定位 主要客户 功能 页面 设备体系"],["compatibility","Residential Compatibility Matrix","机型 DTC 参数设置 故障告警 历史数据 智能调度"],["reference","Product Handbook PRD Release Notes","Handbook PRD compatibility matrix process"],["residential","Users and Roles","End User Dealer Installer Product R&D Regional Team"]
 ];
 
 function badge(s){
@@ -102,7 +105,7 @@ function timeline(date,title,desc){
 function shell(){
  return `<div class="app"><div class="overlay" id="overlay"></div><aside class="sidebar" id="sidebar">
   <div class="brand"><div class="brand-mark">G</div><div><div class="brand-title">Growatt Product Center</div><div class="brand-sub">Product Knowledge Platform</div></div></div>
-  <div id="nav"></div><div class="sidebar-footer">V1.4 · Product Knowledge MVP<br>Residential-first foundation</div>
+  <div id="nav"></div><div class="sidebar-footer">V1.5 · Real Content Integration<br>Handbook + compatibility data</div>
  </aside><main class="main"><header class="topbar">
   <button class="mobile-menu" id="mobileMenu">☰</button><div class="search-wrap"><span class="search-icon">⌕</span>
   <input id="search" class="search" placeholder="${L[lang].search}"><span class="kbd">/</span><div id="searchResults" class="search-results"></div></div>
@@ -184,9 +187,50 @@ function shinephonePage(){
  <section class="section grid grid-3">${quick("◇",zh?"设备兼容":"Device Compatibility",zh?"SPM、WIT、SPH、MINA 等机型能力与参数存在差异。":"Models such as SPM, WIT, SPH and MINA differ in capabilities and parameters.","devices")}${quick("+",zh?"新设备接入":"New Device Enablement",zh?"Device Type、Schema、Capability、测试与区域验证。":"Device type, schema, capability, testing and regional validation.","enablement")}${quick("⇄",zh?"迁移与旧版治理":"Migration & Legacy Governance",zh?"迁移、回滚、维护边界和旧版退场。":"Migration, rollback, maintenance boundary and retirement.","migration")}</section>`;
 }
 
+
+const compatibilityRows=[
+ {model:"MIN 2500-6000TL-XH/XH2/XE/XA",dtc:"5100",scene:"光储充",region:"澳洲",validation:"市场已验收 / 项目组进行中",features:["参数设置","故障告警","历史数据","智能调度"]},
+ {model:"MOD 3-10KTL3-XH / MID XH 系列",dtc:"5400",scene:"光储充",region:"澳洲",validation:"市场已验收 / 项目组进行中",features:["参数设置","故障告警","历史数据","智能调度"]},
+ {model:"WIT 4-25K-HU",dtc:"5603",scene:"工商储",region:"国内",validation:"待补充",features:["参数设置","故障告警","历史数据"]},
+ {model:"SPH 3000-6000TL BL-UP",dtc:"3502",scene:"光储充",region:"—",validation:"待补充",features:["参数设置","故障告警","历史数据","智能调度"]},
+ {model:"SPH 3000-6000TL HU",dtc:"3503",scene:"光储充",region:"澳洲",validation:"市场已验收 / 项目组已验收",features:["参数设置","故障告警","历史数据"]},
+ {model:"SPA 3000-6000TL AU",dtc:"3715",scene:"光储充",region:"澳洲",validation:"市场已验收 / 项目组已验收",features:["参数设置","故障告警","历史数据"]},
+ {model:"SPH / SPA 4-10KTL3 BH-UP",dtc:"3601 / 3725",scene:"光储充",region:"—",validation:"待补充",features:["参数设置","故障告警","历史数据","智能调度"]},
+ {model:"NEO 600-2000M-X",dtc:"5202 / 5203",scene:"微逆",region:"—",validation:"待补充",features:["故障告警","历史数据"]},
+ {model:"NOAH 2000",dtc:"30040",scene:"阳台储能",region:"—",validation:"待补充",features:["参数设置","故障告警"]},
+ {model:"NEXA 2000",dtc:"30070",scene:"阳台储能",region:"—",validation:"待补充",features:["参数设置","故障告警"]},
+ {model:"SPM 8-10KTL-HU(AU)",dtc:"21300",scene:"光储充",region:"澳洲",validation:"待补充",features:["参数设置","故障告警","历史数据"]},
+ {model:"SPF / SPE 部分系列",dtc:"20006 / 20806 / 20701 / 20600",scene:"未兼容",region:"国内 / 待确认",validation:"未验收",features:[]}
+];
+let compatibilityQuery="";
+function featurePills(features){return features.length?features.map(x=>`<span class="feature-pill">${x}</span>`).join(""):`<span class="badge red">未兼容</span>`}
+function handbookPage(){
+ const zh=lang==="zh";
+ return `${head("handbook")}
+ <div class="grid grid-4">${metric("4",zh?"核心章节":"Core Chapters","Imported",100)}${metric("2",zh?"主要客户":"Primary Users","End user / Dealer",100)}${metric("4",zh?"统一建设目标":"Build Principles","One Platform",100)}${metric("3",zh?"关键边界":"Key Boundaries","Verified",100)}</div>
+ <section class="section card"><div class="section-head"><div><h2>${zh?"手册导航":"Handbook Navigation"}</h2><p>${zh?"本页已将前四章核心内容转为网站正文，后续继续细化页面、功能清单与设备接入内容。":"Core content from the first four chapters is now available as web content."}</p></div></div>
+ <div class="chapter-grid">
+ <div class="chapter-card"><span>01</span><h3>${zh?"产品定位与主要客户":"Positioning & Users"}</h3><p>${zh?"为什么建设新版、服务谁、App/Web/云平台/Tools 如何分工。":"Why the new product exists, who it serves, and how App, Web, cloud and Tools divide responsibilities."}</p></div>
+ <div class="chapter-card"><span>02</span><h3>${zh?"当前功能与页面体系":"Current Features & Pages"}</h3><p>${zh?"按一级、二级页面说明监控、控制、告警、历史、账号与电站能力。":"Monitoring, control, alarms, history, account and plant capabilities by page hierarchy."}</p></div>
+ <div class="chapter-card"><span>03</span><h3>${zh?"兼容机型与区域":"Compatibility & Regions"}</h3><p>${zh?"区分设备兼容、功能兼容、区域验收和正式上线状态。":"Separates device support, feature support, regional validation and production release."}</p></div>
+ <div class="chapter-card"><span>04</span><h3>${zh?"统一设备体系与接入":"Unified Device Enablement"}</h3><p>${zh?"Device Type、Schema、Capability、兼容矩阵和验收闭环。":"Device Type, Schema, Capability, compatibility matrix and validation loop."}</p></div></div></section>
+ <section class="section grid grid-2"><div class="card"><h2>${zh?"一句话定位":"Product Positioning"}</h2><div class="quote-block">${zh?"用统一账号、统一电站、统一设备模型和统一能力体系，把复杂的能源设备变成用户看得懂、能操作、可持续优化的能源服务。":"Use unified accounts, plants, device models and capabilities to turn complex energy equipment into understandable, operable and continuously optimizable energy services."}</div></div>
+ <div class="card"><h2>${zh?"四个建设目标":"Four Build Principles"}</h2><ul class="clean-list"><li><b>One Platform</b> — ${zh?"统一账号、电站、设备、权限和数据":"Unified accounts, plants, devices, permissions and data"}</li><li><b>One Device Integration</b> — ${zh?"通过模型和能力复用接入":"Model- and capability-driven enablement"}</li><li><b>One Experience</b> — ${zh?"统一名称、单位、交互和反馈":"Consistent naming, units, interaction and feedback"}</li><li><b>Energy Platform</b> — ${zh?"从设备监控走向能源服务":"Move from device monitoring to energy services"}</li></ul></div></section>
+ <section class="section card"><h2>${zh?"主要客户与任务闭环":"Primary Users & Task Loops"}</h2><div class="grid grid-2"><div class="journey"><h3>🏠 ${zh?"终端用户":"End User"}</h3><p>${zh?"看懂能源流、系统状态和收益，在安全范围内完成常用设置，并知道异常时如何处理。":"Understand energy flow, system status and value, perform safe settings, and know how to respond to issues."}</p><div class="journey-flow">${zh?"注册/授权 → 电站总览 → 设备/历史/告警 → 参数或策略 → 设备回读确认":"Register/Authorize → Plant Overview → Device/History/Alarm → Settings/Strategy → Device Readback"}</div></div><div class="journey"><h3>♙ ${zh?"经销商":"Dealer & Installer"}</h3><p>${zh?"更快建站、绑定、调试和交付，并持续管理多个客户和电站。":"Create, bind, commission and deliver plants faster while supporting multiple customers."}</p><div class="journey-flow">${zh?"创建客户/电站 → 绑定采集器 → 调试校验 → 验证数据与控制 → 交付与持续服务":"Create Customer/Plant → Bind Collector → Commission → Validate Data & Control → Handover & Service"}</div></div></div></section>
+ <section class="section card"><h2>${zh?"必须分开的三类结论":"Three Conclusions That Must Stay Separate"}</h2><div class="boundary-grid"><div><b>1</b><p>${zh?"功能完成 ≠ 全部设备可用":"Feature complete ≠ available on every device"}</p></div><div><b>2</b><p>${zh?"设备兼容 ≠ 所有功能兼容":"Device compatible ≠ all features compatible"}</p></div><div><b>3</b><p>${zh?"设备在售区域 ≠ App 正式上线区域":"Device sales region ≠ App production region"}</p></div></div></section>`;
+}
+function compatibilityPage(){
+ const zh=lang==="zh"; const q=compatibilityQuery.toLowerCase();
+ const rows=compatibilityRows.filter(r=>(r.model+r.dtc+r.scene+r.region+r.features.join(" ")).toLowerCase().includes(q));
+ return `${head("compatibility")}<div class="grid grid-4">${metric("12",zh?"代表机型组":"Representative Model Groups","Imported",100)}${metric("4",zh?"核心能力":"Core Capabilities","Parameters · Alarm · History · Dispatch",100)}${metric("4",zh?"业务场景":"Business Scenarios","Residential-first",80)}${metric("3",zh?"结论维度":"Conclusion Dimensions","Support · Validation · Region",100)}</div>
+ <section class="section card"><div class="section-head"><div><h2>${zh?"真实设备兼容数据":"Real Device Compatibility Data"}</h2><p>${zh?"来源于《新版 Server_ShinePhone 功能兼容清单》，当前展示代表性机型组。":"Sourced from the New Server/ShinePhone compatibility workbook; representative model groups are shown."}</p></div><input class="matrix-search" value="${compatibilityQuery}" oninput="setCompatibilityQuery(this.value)" placeholder="${zh?"搜索机型、DTC、区域或能力":"Search model, DTC, region or feature"}"></div>
+ <div class="compat-table"><div class="compat-head"><span>${zh?"机型":"Model"}</span><span>DTC</span><span>${zh?"场景":"Scenario"}</span><span>${zh?"区域/验收":"Region / Validation"}</span><span>${zh?"功能覆盖":"Feature Coverage"}</span></div>${rows.map(r=>`<div class="compat-row"><div><b>${r.model}</b></div><span class="mono">${r.dtc}</span><span>${r.scene}</span><div><b>${r.region}</b><small>${r.validation}</small></div><div class="feature-list">${featurePills(r.features)}</div></div>`).join("")||`<div class="empty">${zh?"未找到匹配机型":"No matching model"}</div>`}</div></section>
+ <section class="section grid grid-3">${quick("✓",zh?"支持状态":"Support Status",zh?"监控场景与具体功能是否已兼容":"Whether the monitoring scenario and features are supported","compatibility")}${quick("🧪",zh?"验收状态":"Validation Status",zh?"市场验收与项目组验收需分别记录":"Market and project validation are tracked separately","compatibility")}${quick("🌍",zh?"区域状态":"Region Status",zh?"设备在售、区域验收和正式上线不能混用":"Sales, validation and production release must not be conflated","compatibility")}</section>`;
+}
+
 function referencePage(){
  const zh=lang==="zh";
- return `${head("reference")}<div class="grid grid-4">${metric("1",zh?"产品 Handbook":"Product Handbook","Draft",65)}${metric("1",zh?"已批准 PRD":"Approved PRD","Approved",100)}${metric("1",zh?"设备矩阵":"Device Matrix","In Review",70)}${metric("1",zh?"接入流程":"Enablement Process","Draft",60)}</div><section class="section card"><div class="section-head"><div><h2>${zh?"知识资产目录":"Knowledge Asset Catalog"}</h2><p>${zh?"V1.4 先建立资产类型、Owner、状态与更新时间，后续逐步导入正文。":"V1.4 establishes type, owner, status and freshness before importing full content."}</p></div></div><div class="asset-table"><div class="asset-head"><span>Type</span><span>Title</span><span>Owner</span><span>Updated</span><span>Status</span></div>${recentDocs.map(d=>`<div class="asset-row"><span class="doc-type">${d.type}</span><b>${d.title}</b><span>${d.owner}</span><span>${d.updated}</span>${badge(d.status)}</div>`).join("")}</div></section><section class="section grid grid-3">${quick("📘",zh?"产品 Handbook":"Product Handbook",zh?"产品定位、架构、用户、功能与开发指引":"Positioning, architecture, users, features and development guidance","shinephone")}${quick("📄","PRD",zh?"需求背景、方案、边界、验收与决策记录":"Context, solution, boundary, acceptance and decisions","updates")}${quick("🧩",zh?"兼容矩阵":"Compatibility Matrix",zh?"平台、机型、功能、参数与固件支持情况":"Platform, model, feature, parameter and firmware support","devices")}</section>`;
+ return `${head("reference")}<div class="grid grid-4">${metric("1",zh?"产品 Handbook":"Product Handbook","Draft",65)}${metric("1",zh?"已批准 PRD":"Approved PRD","Approved",100)}${metric("1",zh?"设备矩阵":"Device Matrix","In Review",70)}${metric("1",zh?"接入流程":"Enablement Process","Draft",60)}</div><section class="section card"><div class="section-head"><div><h2>${zh?"知识资产目录":"Knowledge Asset Catalog"}</h2><p>${zh?"V1.5 已导入 Handbook 核心正文与真实设备兼容数据。":"V1.5 imports core handbook content and real device compatibility data."}</p></div></div><div class="asset-table"><div class="asset-head"><span>Type</span><span>Title</span><span>Owner</span><span>Updated</span><span>Status</span></div>${recentDocs.map(d=>`<div class="asset-row"><span class="doc-type">${d.type}</span><b>${d.title}</b><span>${d.owner}</span><span>${d.updated}</span>${badge(d.status)}</div>`).join("")}</div></section><section class="section grid grid-3">${quick("📘",zh?"产品 Handbook":"Product Handbook",zh?"产品定位、架构、用户、功能与开发指引":"Positioning, architecture, users, features and development guidance","shinephone")}${quick("📄","PRD",zh?"需求背景、方案、边界、验收与决策记录":"Context, solution, boundary, acceptance and decisions","updates")}${quick("🧩",zh?"兼容矩阵":"Compatibility Matrix",zh?"平台、机型、功能、参数与固件支持情况":"Platform, model, feature, parameter and firmware support","devices")}</section>`;
 }
 function generic(id,cards){
  return `${head(id)}<div class="grid grid-3">${cards.map(c=>quick(c[0],c[1],c[2],c[3]||id)).join("")}</div>`;
@@ -201,13 +245,13 @@ function migrationPage(){
 }
 function roadmapPage(){
  const zh=lang==="zh";
- return `${head("roadmap")}<div class="card timeline">${timeline("2026 Q3",zh?"V1.4 产品知识 MVP":"V1.4 Product Knowledge MVP",zh?"首页、导航、产品组合、平台和设备中心。":"Home, navigation, portfolio, platform and device center.")}${timeline("2026 Q4",zh?"真实资料导入":"Production Content Integration",zh?"Handbook、设备矩阵、兼容清单和 Release Notes。":"Handbook, device matrix, compatibility and release notes.")}${timeline("2027 Q1","AI Product Assistant",zh?"自然语言搜索、设备对比和文档问答。":"Natural language search, device comparison and document Q&A.")}</div>`;
+ return `${head("roadmap")}<div class="card timeline">${timeline("2026 Q3",zh?"V1.5 真实资料接入":"V1.5 Real Content Integration",zh?"Handbook 核心正文、真实兼容矩阵和知识导航。":"Handbook content, real compatibility matrix and knowledge navigation.")}${timeline("2026 Q4",zh?"真实资料导入":"Production Content Integration",zh?"Handbook、设备矩阵、兼容清单和 Release Notes。":"Handbook, device matrix, compatibility and release notes.")}${timeline("2027 Q1","AI Product Assistant",zh?"自然语言搜索、设备对比和文档问答。":"Natural language search, device comparison and document Q&A.")}</div>`;
 }
-function updatesPage(){return `${head("updates")}<div class="card timeline">${timeline("2026-07-19","GPC V1.4","Product knowledge MVP: operating dashboard, user model, lifecycle, platform data flow and asset catalog.")}${timeline("2026-07-18","Login Region Experience","Added region consistency guidance and no-plant troubleshooting.")}${timeline("2026-07-17","Residential IA V3","Reorganized around current, legacy, migration, edge EMS and governance.")}</div>`;}
+function updatesPage(){return `${head("updates")}<div class="card timeline">${timeline("2026-07-19","GPC V1.5","Imported handbook core content and real device compatibility data with searchable model matrix.")}${timeline("2026-07-19","GPC V1.5","Product knowledge MVP: operating dashboard, user model, lifecycle, platform data flow and asset catalog.")}${timeline("2026-07-18","Login Region Experience","Added region consistency guidance and no-plant troubleshooting.")}${timeline("2026-07-17","Residential IA V3","Reorganized around current, legacy, migration, edge EMS and governance.")}</div>`;}
 function renderPage(){
  const zh=lang==="zh";
  const views={
-  home:homePage,portfolio:portfolioPage,residential:residentialPage,platform:platformPage,devices:devicesPage,migration:migrationPage,roadmap:roadmapPage,updates:updatesPage,
+  home:homePage,portfolio:portfolioPage,residential:residentialPage,platform:platformPage,devices:devicesPage,migration:migrationPage,roadmap:roadmapPage,updates:updatesPage,handbook:handbookPage,compatibility:compatibilityPage,
   shinephone:shinephonePage,
   web:()=>generic("web",[["📈","Monitoring","Realtime and historical data"],["🎛","Control","Shared control capabilities with App"],["⚡","Energy","Energy flow and analysis"],["⚠","Alarm","Alarm overview and handling"],["👤","Account","User, plant and sharing"],["◇","Device","Device status and compatibility"]]),
   legacy:()=>generic("legacy",[["🛠","Maintenance First","Bug fixes, compliance and critical stability"],["⛔","No Routine Features","No routine standalone feature development"],["⚖","Exception Review","Exceptions require product review"],["⇄","Migration Support","Guide users and data to new products"],["📉","Retirement Metrics","Track usage decline and remaining users"],["📘","Lifecycle","Status, owner, scope and lifecycle"]]),
@@ -225,6 +269,7 @@ function renderPage(){
 }
 function go(page){current=page;location.hash="#/"+page;renderPage();document.getElementById("sidebar").classList.remove("open");document.getElementById("overlay").classList.remove("show")}
 function setPortfolioFilter(f){portfolioFilter=f;renderPage()}
+function setCompatibilityQuery(v){compatibilityQuery=v;renderPage();setTimeout(()=>{const el=document.querySelector(".matrix-search");if(el){el.focus();el.setSelectionRange(v.length,v.length)}},0)}
 function setupSearch(){
  const input=document.getElementById("search"),box=document.getElementById("searchResults");
  input.oninput=()=>{const q=input.value.trim().toLowerCase();if(!q){box.classList.remove("show");box.innerHTML="";return}
@@ -240,5 +285,5 @@ function bind(){
  btn.onclick=()=>{side.classList.add("open");overlay.classList.add("show")};overlay.onclick=()=>{side.classList.remove("open");overlay.classList.remove("show")};
 }
 function init(){document.getElementById("app").innerHTML=shell();renderNav();renderPage();setupSearch();bind()}
-window.go=go;window.setPortfolioFilter=setPortfolioFilter;init();
+window.go=go;window.setPortfolioFilter=setPortfolioFilter;window.setCompatibilityQuery=setCompatibilityQuery;init();
 window.onhashchange=()=>{current=location.hash.replace("#/","")||"home";renderPage()};

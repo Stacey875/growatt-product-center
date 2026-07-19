@@ -1,14 +1,9 @@
 # Changelog
 
-## V1.4 — Product Knowledge MVP
+## V1.5 — Real Content Integration
 
-- Rebuilt the home dashboard around product operating status and knowledge assets.
-- Added residential product mission, scope, users, lifecycle and product map.
-- Upgraded the platform architecture with data-flow and topology constraints.
-- Added a structured knowledge asset catalog.
-- Added decision and risk tracking for leadership review.
-- Added responsive V1.4 UI components and cache-busting resource versions.
-
-## V1.3 — Leadership Preview
-
-- Added leadership preview version markers and initial content structure.
+- Added a dedicated Product Handbook page based on the first four chapters of the New ShinePhone & ShineServer handbook.
+- Added positioning, primary users, build principles, user journeys and product boundaries.
+- Added a searchable compatibility matrix sourced from the real Server/ShinePhone compatibility workbook.
+- Added representative model groups, DTC, scenarios, validation status and feature coverage.
+- Added Knowledge navigation and cache version 1.5.0.

@@ -1,38 +1,17 @@
-# Growatt Product Center V1.4 — Product Knowledge MVP
+# Growatt Product Center V1.5 — Real Content Integration
 
 可直接部署至 GitHub Pages 的静态产品知识平台。
 
-## V1.4 新增
+## 本版本内容
 
-- 产品运行 Dashboard：产品模块、设备族、知识资产与核心工作流
-- 户用数字产品线：使命、范围、核心用户、生命周期与产品地图
-- 平台架构：Cloud → Plant → Collector / Edge → Device，以及上下行数据流
-- 知识资产目录：Handbook、PRD、设备矩阵与新品接入流程
-- 决策与风险区：产品边界、跨区账号限制、设备能力驱动 UI
-- 全站版本升级为 V1.4，并增加静态资源缓存版本号
-
-## 核心页面
-
-- Dashboard
-- Residential Digital Products
-- Product Portfolio
-- New ShinePhone
-- Platform Architecture
-- Device Center
-- Migration Center
-- Reference / Knowledge Assets
-- Governance / Metrics / Roadmap
+- 导入 New ShinePhone & ShineServer Handbook 前四章核心内容
+- 新增 Product Handbook 独立页面
+- 导入真实 Server / ShinePhone 设备兼容数据
+- 新增可搜索的 Compatibility Matrix
+- 明确功能支持、区域验收、正式上线三个不同结论维度
+- 保留产品组合、平台架构、设备中心、迁移治理与路线图
+- 中英文切换、全局搜索和响应式布局
 
 ## 部署
 
-将仓库根目录中的以下文件覆盖上传：
-
-- `index.html`
-- `styles.css`
-- `app.js`
-- `README.md`
-- `CHANGELOG.md`
-- `LEADERSHIP-DEMO.md`
-- `.nojekyll`
-
-GitHub Pages 配置：`main` 分支、`/ (root)`。
+将根目录全部文件上传至 GitHub 仓库 main 分支根目录。GitHub Pages 部署完成后，使用 Ctrl + Shift + R 强制刷新。

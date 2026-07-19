@@ -1,14 +1,12 @@
-# GPC V1.4 Leadership Demo
+# V1.5 Leadership Demo
 
-## 推荐演示路径
+推荐演示顺序：
 
-1. **Dashboard**：说明这不是文档目录，而是产品运行与知识资产入口。
-2. **Residential Digital Products**：展示产品线使命、边界、核心用户与生命周期。
-3. **New ShinePhone**：说明功能由用户设备、型号、固件、Capability 与 Schema 动态决定。
-4. **Platform Architecture**：讲清 Cloud → Plant → Collector / Edge → Device，以及上下行数据流。
-5. **Device Center**：展示设备兼容与能力差异。
-6. **Reference**：展示 Handbook、PRD、设备矩阵、接入流程的资产化方向。
+1. Home：说明 GPC 从框架进入真实内容沉淀阶段。
+2. Product Handbook：展示产品定位、建设目标、主要客户和任务闭环。
+3. Compatibility Matrix：搜索 SPM、SPH、WIT 或 DTC，展示真实兼容数据。
+4. Platform Architecture：说明 Cloud → Plant → Collector → Device。
+5. Device Center：连接设备能力、Schema 和新品接入。
+6. Migration / Governance：说明平台不仅记录功能，也管理迁移、Owner 和状态口径。
 
-## 建议结论
-
-GPC 当前已经具备产品线总览、平台与设备模型、迁移治理和知识资产目录。下一阶段重点不是继续增加菜单，而是导入真实 Handbook、PRD 和兼容矩阵，并建立持续更新机制。
+建议结论：V1.5 已经证明 GPC 可以把 Word Handbook 和 Excel 兼容矩阵转为可检索、可演示、可持续维护的网站知识。
