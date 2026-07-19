@@ -1,44 +1,32 @@
-# Growatt Product Center
+# Growatt Product Center V1.1
 
-A GitHub Pages-ready product knowledge platform for Growatt.
+Phase-one enhancement of the Growatt Product Center.
+
+## What changed
+
+- Reworked homepage dashboard
+- Added richer product health metrics
+- Improved navigation hierarchy and counts
+- Expanded Product Portfolio with filters, lifecycle, owner, scope, release and migration status
+- Expanded Residential Digital Product Line overview
+- Added platform hierarchy visualization
+- Expanded Device Center compatibility matrix
+- Improved migration center workstreams
+- Improved global search and bilingual experience
+- Kept GitHub Pages deployment simple with static files
 
 ## Deploy
 
-1. Upload all files in this folder to the repository root.
-2. Go to **Settings → Pages**.
-3. Under **Build and deployment**, choose:
-   - Source: **Deploy from a branch**
-   - Branch: **main**
-   - Folder: **/(root)**
-4. Save and wait for deployment.
+Upload these files to the repository root and replace the existing versions:
 
-Expected URL:
+- `index.html`
+- `styles.css`
+- `app.js`
+- `README.md`
+- `.nojekyll`
 
-`https://stacey875.github.io/growatt-product-center/`
+GitHub Pages remains:
 
-## Local preview
-
-You can open `index.html` directly in a browser.
-
-## Included modules
-
-- Home dashboard
-- Product portfolio
-- Residential digital product line
-- New ShinePhone
-- Residential Web Portal
-- Legacy products
-- Migration center
-- Dealer & installer
-- Home Edge EMS
-- Platform architecture
-- Device center
-- Capability center
-- Device Schema
-- New device enablement
-- Product governance
-- Metrics center
-- Roadmap
-- Latest updates
-- Reference
-- FAQ
+- Source: Deploy from a branch
+- Branch: main
+- Folder: /(root)
