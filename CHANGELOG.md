@@ -1,10 +1,14 @@
 # Changelog
 
+## V1.4 — Product Knowledge MVP
+
+- Rebuilt the home dashboard around product operating status and knowledge assets.
+- Added residential product mission, scope, users, lifecycle and product map.
+- Upgraded the platform architecture with data-flow and topology constraints.
+- Added a structured knowledge asset catalog.
+- Added decision and risk tracking for leadership review.
+- Added responsive V1.4 UI components and cache-busting resource versions.
+
 ## V1.3 — Leadership Preview
 
-- 版本标识从 V1.2 升级为 V1.3。
-- 增强领导汇报版 Dashboard 与产品线内容。
-- 完善 New ShinePhone、Platform Architecture、Device Center 展示。
-- 更新 Roadmap 与 Latest Updates。
-- 为 CSS/JS 增加版本参数，降低旧缓存导致的版本错乱。
-- 增加可验证的源码与页面版本标识。
+- Added leadership preview version markers and initial content structure.

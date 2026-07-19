@@ -1,36 +1,38 @@
-# Growatt Product Center V1.3 — Leadership Preview
+# Growatt Product Center V1.4 — Product Knowledge MVP
 
 可直接部署至 GitHub Pages 的静态产品知识平台。
 
-## V1.3 已完成
+## V1.4 新增
 
-- 首页 Dashboard 与领导汇报入口
-- Residential Digital Products 产品线总览
-- Product Portfolio 生命周期与迁移状态矩阵
-- New ShinePhone 产品定位、用户、功能架构与当前重点问题
-- Cloud → Plant → Collector → Device 平台架构
-- Device Center 与设备兼容矩阵
-- Capability / Schema / New Device Enablement
-- Migration Center、Product Governance、Metrics 与 Roadmap
-- 中英文切换、全局搜索、响应式布局
-- 静态资源版本参数，减少 GitHub Pages 浏览器缓存问题
+- 产品运行 Dashboard：产品模块、设备族、知识资产与核心工作流
+- 户用数字产品线：使命、范围、核心用户、生命周期与产品地图
+- 平台架构：Cloud → Plant → Collector / Edge → Device，以及上下行数据流
+- 知识资产目录：Handbook、PRD、设备矩阵与新品接入流程
+- 决策与风险区：产品边界、跨区账号限制、设备能力驱动 UI
+- 全站版本升级为 V1.4，并增加静态资源缓存版本号
 
-## 如何验证版本
+## 核心页面
 
-1. 打开仓库根目录 `README.md`，标题应为 `V1.3`。
-2. 打开 `app.js` 搜索 `V1.3`，应能找到多个结果。
-3. 打开线上网站，左侧底部应显示 `V1.3 · Leadership Preview`。
-4. 页面标题应显示 `Growatt Product Center · V1.3`。
+- Dashboard
+- Residential Digital Products
+- Product Portfolio
+- New ShinePhone
+- Platform Architecture
+- Device Center
+- Migration Center
+- Reference / Knowledge Assets
+- Governance / Metrics / Roadmap
 
 ## 部署
 
-将以下文件覆盖上传到 GitHub 仓库根目录：
+将仓库根目录中的以下文件覆盖上传：
 
 - `index.html`
 - `styles.css`
 - `app.js`
 - `README.md`
+- `CHANGELOG.md`
 - `LEADERSHIP-DEMO.md`
 - `.nojekyll`
 
-提交后等待 GitHub Pages 自动更新，再使用 `Ctrl + Shift + R` 强制刷新。
+GitHub Pages 配置：`main` 分支、`/ (root)`。

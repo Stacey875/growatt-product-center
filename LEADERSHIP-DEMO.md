@@ -1,31 +1,14 @@
-# Growatt Product Center V1.3 — 初步汇报演示顺序
+# GPC V1.4 Leadership Demo
 
-## 建议演示路径（5–8 分钟）
+## 推荐演示路径
 
-1. 首页 Dashboard
-   - 说明目标：统一沉淀产品组合、设备能力、迁移治理、指标与路线图。
-   - 强调当前为 Residential-first 的 MVP。
+1. **Dashboard**：说明这不是文档目录，而是产品运行与知识资产入口。
+2. **Residential Digital Products**：展示产品线使命、边界、核心用户与生命周期。
+3. **New ShinePhone**：说明功能由用户设备、型号、固件、Capability 与 Schema 动态决定。
+4. **Platform Architecture**：讲清 Cloud → Plant → Collector / Edge → Device，以及上下行数据流。
+5. **Device Center**：展示设备兼容与能力差异。
+6. **Reference**：展示 Handbook、PRD、设备矩阵、接入流程的资产化方向。
 
-2. Residential Digital Products
-   - 展示产品线职责边界、产品线地图和核心模块。
-   - 说明 ShineTools 不属于该产品线，归 Service & Operations。
+## 建议结论
 
-3. Product Portfolio
-   - 展示 Current / Maintenance 分类、Owner、Scope、Release、Migration。
-   - 说明后续可作为版本规划与生命周期治理入口。
-
-4. New ShinePhone
-   - 展示产品定位、用户角色、功能结构、设备驱动 UI 和当前登录地区问题。
-   - 强调功能与参数将由设备型号、固件、Capability 和 Schema 动态决定。
-
-5. Platform Architecture
-   - 展示 Cloud → Plant → Collector → Device。
-   - 说明 Capability 与 Schema 是平台化兼容新设备的基础。
-
-6. Device Center / Migration Center
-   - 展示设备兼容矩阵和迁移工作包。
-   - 当前部分数据为结构示例，后续导入真实 Excel 与版本数据。
-
-## 汇报结论
-
-目前已完成产品知识平台的第一阶段框架和在线 MVP。下一阶段优先导入 New ShinePhone / ShineServer Handbook、真实设备兼容清单、Capability Matrix、Schema、Release Notes 和 PRD，使平台从展示型 Demo 逐步成为可日常使用的产品知识中心。
+GPC 当前已经具备产品线总览、平台与设备模型、迁移治理和知识资产目录。下一阶段重点不是继续增加菜单，而是导入真实 Handbook、PRD 和兼容矩阵，并建立持续更新机制。
