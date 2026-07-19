@@ -122,3 +122,9 @@ tr.clickable:hover{background:#f8fbf9}
   .hero{padding:26px 22px}.hero h1{font-size:28px}.list-row{grid-template-columns:1fr auto}
   .list-row>*:nth-child(2),.list-row>*:nth-child(3){display:none}
 }
+
+/* V1.3 Leadership Preview enhancements */
+.release-chip{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border-radius:999px;background:var(--brand-soft);color:var(--brand-dark);font-size:12px;font-weight:700;border:1px solid #cfe9d8}
+.release-chip:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 4px rgba(16,164,90,.12)}
+.card{transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+.page-head:after{content:"V1.3";display:inline-flex;align-items:center;height:28px;padding:0 10px;border-radius:999px;background:var(--brand-soft);color:var(--brand-dark);font-size:12px;font-weight:700;white-space:nowrap}

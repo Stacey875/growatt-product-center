@@ -1,4 +1,4 @@
-# Growatt Product Center V1.2 — 初步汇报演示顺序
+# Growatt Product Center V1.3 — 初步汇报演示顺序
 
 ## 建议演示路径（5–8 分钟）
 

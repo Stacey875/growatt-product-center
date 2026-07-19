@@ -71,7 +71,7 @@ const searchIndex=[
  ["migration","Migration Center","账号 电站 设备 历史数据"],["edge","Home Edge EMS","本地控制 能源策略 智能调度"],
  ["devices","Device Center","SPM WIT SPH MINA MIN MOD"],["capability","Capability Center","Monitoring Control Alarm OTA Energy"],
  ["schema","Device Schema","Telemetry Parameter Alarm Control"],["enablement","New Device Enablement","Capability Schema Test Region Launch"],
- ["metrics","Metrics Center","Migration Stability Core Flow Compatibility Business"],["governance","Product Governance","RACI ownership responsibility"]
+ ["metrics","Metrics Center","Migration Stability Core Flow Compatibility Business"],["updates","GPC V1.3","Leadership Preview release notes"],["governance","Product Governance","RACI ownership responsibility"]
 ];
 
 function badge(s){
@@ -90,7 +90,7 @@ function timeline(date,title,desc){
 function shell(){
  return `<div class="app"><div class="overlay" id="overlay"></div><aside class="sidebar" id="sidebar">
   <div class="brand"><div class="brand-mark">G</div><div><div class="brand-title">Growatt Product Center</div><div class="brand-sub">Product Knowledge Platform</div></div></div>
-  <div id="nav"></div><div class="sidebar-footer">V1.2 · Leadership Preview<br>Residential-first foundation</div>
+  <div id="nav"></div><div class="sidebar-footer">V1.3 · Leadership Preview<br>Residential-first foundation</div>
  </aside><main class="main"><header class="topbar">
   <button class="mobile-menu" id="mobileMenu">☰</button><div class="search-wrap"><span class="search-icon">⌕</span>
   <input id="search" class="search" placeholder="${L[lang].search}"><span class="kbd">/</span><div id="searchResults" class="search-results"></div></div>
@@ -102,7 +102,7 @@ function renderNav(){
  document.querySelectorAll(".nav-item").forEach(el=>el.onclick=()=>go(el.dataset.page));
 }
 function head(id){
- return `<div class="breadcrumb">Growatt Product Center / ${L[lang][id]}</div><div class="page-head"><div><h1>${L[lang][id]}</h1><p>${descriptions[id][lang==="zh"?0:1]}</p></div>${badge("V1.2")}</div>`;
+ return `<div class="breadcrumb">Growatt Product Center / ${L[lang][id]}</div><div class="page-head"><div><h1>${L[lang][id]}</h1><p>${descriptions[id][lang==="zh"?0:1]}</p></div>${badge("V1.3")}</div>`;
 }
 function homePage(){
  const zh=lang==="zh";
@@ -195,9 +195,9 @@ function migrationPage(){
 }
 function roadmapPage(){
  const zh=lang==="zh";
- return `${head("roadmap")}<div class="card timeline">${timeline("2026 Q3",zh?"V1.2 汇报版与内容深化":"V1.1 Phase One",zh?"首页、导航、产品组合、平台和设备中心。":"Home, navigation, portfolio, platform and device center.")}${timeline("2026 Q4",zh?"真实资料导入":"Production Content Integration",zh?"Handbook、设备矩阵、兼容清单和 Release Notes。":"Handbook, device matrix, compatibility and release notes.")}${timeline("2027 Q1","AI Product Assistant",zh?"自然语言搜索、设备对比和文档问答。":"Natural language search, device comparison and document Q&A.")}</div>`;
+ return `${head("roadmap")}<div class="card timeline">${timeline("2026 Q3",zh?"V1.3 领导汇报版":"V1.3 Leadership Preview",zh?"首页、导航、产品组合、平台和设备中心。":"Home, navigation, portfolio, platform and device center.")}${timeline("2026 Q4",zh?"真实资料导入":"Production Content Integration",zh?"Handbook、设备矩阵、兼容清单和 Release Notes。":"Handbook, device matrix, compatibility and release notes.")}${timeline("2027 Q1","AI Product Assistant",zh?"自然语言搜索、设备对比和文档问答。":"Natural language search, device comparison and document Q&A.")}</div>`;
 }
-function updatesPage(){return `${head("updates")}<div class="card timeline">${timeline("2026-07-19","GPC V1.2","Phase-one content and navigation upgraded.")}${timeline("2026-07-18","Login Region Experience","Added region consistency guidance and no-plant troubleshooting.")}${timeline("2026-07-17","Residential IA V3","Reorganized around current, legacy, migration, edge EMS and governance.")}</div>`;}
+function updatesPage(){return `${head("updates")}<div class="card timeline">${timeline("2026-07-19","GPC V1.3","Leadership dashboard, product-line content, platform architecture and device center upgraded.")}${timeline("2026-07-18","Login Region Experience","Added region consistency guidance and no-plant troubleshooting.")}${timeline("2026-07-17","Residential IA V3","Reorganized around current, legacy, migration, edge EMS and governance.")}</div>`;}
 function renderPage(){
  const zh=lang==="zh";
  const views={
