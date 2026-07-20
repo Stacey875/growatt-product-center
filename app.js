@@ -263,9 +263,6 @@ function referencePage(){
  const zh=lang==="zh";
  return `${head("reference")}<div class="grid grid-4">${metric("1",zh?"产品 Handbook":"Product Handbook","Draft",65)}${metric("1",zh?"已批准 PRD":"Approved PRD","Approved",100)}${metric("1",zh?"设备矩阵":"Device Matrix","In Review",70)}${metric("1",zh?"接入流程":"Enablement Process","Draft",60)}</div><section class="section card"><div class="section-head"><div><h2>${zh?"知识资产目录":"Knowledge Asset Catalog"}</h2><p>${zh?"V1.6 已增加 PRD、决策与验收标准的结构化台账。":"V1.5 imports core handbook content and real device compatibility data."}</p></div></div><div class="asset-table"><div class="asset-head"><span>Type</span><span>Title</span><span>Owner</span><span>Updated</span><span>Status</span></div>${recentDocs.map(d=>`<div class="asset-row"><span class="doc-type">${d.type}</span><b>${d.title}</b><span>${d.owner}</span><span>${d.updated}</span>${badge(d.status)}</div>`).join("")}</div></section><section class="section grid grid-3">${quick("📘",zh?"产品 Handbook":"Product Handbook",zh?"产品定位、架构、用户、功能与开发指引":"Positioning, architecture, users, features and development guidance","shinephone")}${quick("📄","PRD",zh?"需求背景、方案、边界、验收与决策记录":"Context, solution, boundary, acceptance and decisions","updates")}${quick("🧩",zh?"兼容矩阵":"Compatibility Matrix",zh?"平台、机型、功能、参数与固件支持情况":"Platform, model, feature, parameter and firmware support","devices")}</section>`;
 }
-function generic(id,cards){
- return `${head(id)}<div class="grid grid-3">${cards.map(c=>quick(c[0],c[1],c[2],c[3]||id)).join("")}</div>`;
-}
 function migrationPage(){
  const zh=lang==="zh";
  return `${head("migration")}<div class="grid grid-4">${metric("82%",zh?"整体迁移完成率":"Overall Migration","In progress",82)}${metric("91%",zh?"账号迁移成功率":"Account Migration","Stable",91)}${metric("76%",zh?"设备迁移完成率":"Device Migration","Tracking",76)}${metric("12",zh?"当前阻塞项":"Open Blockers","Review",35)}</div>
@@ -279,23 +276,156 @@ function roadmapPage(){
  return `${head("roadmap")}<div class="card timeline">${timeline("2026 Q3",zh?"V1.6 PRD 与决策中心":"V1.6 PRD & Decision Center",zh?"Handbook 核心正文、真实兼容矩阵和知识导航。":"Handbook content, real compatibility matrix and knowledge navigation.")}${timeline("2026 Q4",zh?"真实资料导入":"Production Content Integration",zh?"Handbook、设备矩阵、兼容清单和 Release Notes。":"Handbook, device matrix, compatibility and release notes.")}${timeline("2027 Q1","AI Product Assistant",zh?"自然语言搜索、设备对比和文档问答。":"Natural language search, device comparison and document Q&A.")}</div>`;
 }
 function updatesPage(){return `${head("updates")}<div class="card timeline">${timeline("2026-07-19","GPC V1.6","Imported handbook core content and real device compatibility data with searchable model matrix.")}${timeline("2026-07-19","GPC V1.6","Product knowledge MVP: operating dashboard, user model, lifecycle, platform data flow and asset catalog.")}${timeline("2026-07-18","Login Region Experience","Added region consistency guidance and no-plant troubleshooting.")}${timeline("2026-07-17","Residential IA V3","Reorganized around current, legacy, migration, edge EMS and governance.")}</div>`;}
-function renderPage(){
+const capabilityCatalog=[
+ {cap:"Monitoring",zh:"监控",desc:["实时数据、系统状态与能量流的统一展示。","Unified view of realtime data, system status and energy flow."]},
+ {cap:"Control",zh:"控制",desc:["工作模式、SOC、充放电与参数下发并回读确认。","Work mode, SOC, charge/discharge and parameter delivery with readback."]},
+ {cap:"Alarm",zh:"告警",desc:["告警码、等级、原因定位与处理建议。","Alarm codes, levels, root-cause and handling guidance."]},
+ {cap:"History",zh:"历史数据",desc:["历史曲线、统计报表与数据导出。","History curves, statistical reports and data export."]},
+ {cap:"Energy",zh:"能源管理",desc:["自发自用、峰谷套利、收益核算与能量优化。","Self-consumption, TOU arbitrage, revenue and energy optimization."]},
+ {cap:"OTA",zh:"远程升级",desc:["固件资格判断、灰度发布与失败回滚。","Firmware eligibility, staged rollout and rollback."]},
+ {cap:"Scheduler",zh:"智能调度",desc:["策略调度与计划任务，每站仅一台设备参与。","Strategy dispatch and scheduled tasks; one participant per plant."]},
+ {cap:"Connectivity",zh:"连接能力",desc:["采集器接入、组网、发现与在线状态维持。","Collector onboarding, networking, discovery and online-state keeping."]}
+];
+const raciRoles=[
+ {role:"Residential PM",zh:"户用产品负责人",tag:"Owner",resp:[["产品组合、优先级与路线图","Portfolio, priority and roadmap"],["跨团队决策与版本验收","Cross-team decisions and release sign-off"],["迁移与退场治理","Migration and retirement governance"]]},
+ {role:"Product Specialist",zh:"产品专家",tag:"Detail",resp:[["需求细化与 PRD 撰写","Requirement detail and PRD authoring"],["交付支持与验收标准","Delivery support and acceptance criteria"],["文档与知识资产维护","Documentation and knowledge assets"]]},
+ {role:"Platform PM",zh:"平台产品",tag:"Foundation",resp:[["账号、区域、权限与数据服务","Account, region, permission and data services"],["共享能力与接口约定","Shared capabilities and interface contracts"],["平台稳定性与容量","Platform stability and capacity"]]},
+ {role:"Device PM",zh:"设备产品",tag:"Device",resp:[["设备类型、模型与 Schema","Device type, model and schema"],["能力映射与固件范围","Capability mapping and firmware range"],["新品兼容与接入","New-device enablement"]]},
+ {role:"Engineering & QA",zh:"研发与测试",tag:"Delivery",resp:[["功能实现与联调","Implementation and integration"],["质量策略与自动化","Quality strategy and automation"],["回归与发布门槛","Regression and release gates"]]},
+ {role:"Regional Teams",zh:"区域团队",tag:"Market",resp:[["市场需求与合规验证","Market needs and compliance"],["区域验收与上线准备","Regional validation and launch readiness"],["本地化与运营反馈","Localization and operations feedback"]]}
+];
+const enablementStages=[
+ {no:"01",zh:"立项",en:"Initiation",desc:["明确业务目标、目标区域与优先级。","Define business goal, target regions and priority."],items:[["商业价值与用户场景","Business value and user scenario"],["目标区域与合规范围","Target regions and compliance scope"],["优先级与里程碑","Priority and milestones"]]},
+ {no:"02",zh:"能力建模",en:"Capability Model",desc:["定义设备类型、Schema 与能力集合。","Define device type, schema and capability set."],items:[["Device Type 与父子模型","Device type and parent-child model"],["参数/告警/遥测 Schema","Parameter / alarm / telemetry schema"],["能力映射与复用组件","Capability mapping and reusable components"]]},
+ {no:"03",zh:"平台接入",en:"Platform Enablement",desc:["打通云平台账号、数据与消息服务。","Wire up cloud account, data and messaging services."],items:[["数据点接入与存储","Data-point ingestion and storage"],["权限与区域配置","Permission and region config"],["消息与告警通道","Messaging and alarm channels"]]},
+ {no:"04",zh:"App / Web",en:"App / Web",desc:["按能力动态生成页面、参数与操作。","Generate UI, parameters and actions by capability."],items:[["动态页面渲染规则","Dynamic rendering rules"],["不支持能力的降级展示","Fallback for unsupported capabilities"],["多语言与单位一致性","Language and unit consistency"]]},
+ {no:"05",zh:"验证",en:"Validation",desc:["固件、功能、区域三类验收分别记录。","Validate firmware, features and regions separately."],items:[["固件与设备联调","Firmware and device integration"],["功能与兼容矩阵测试","Feature and compatibility matrix tests"],["区域合规与市场验收","Regional compliance and market sign-off"]]},
+ {no:"06",zh:"上线",en:"Launch",desc:["灰度发布、指标监控与检查清单闭环。","Gradual rollout, metric monitoring and checklist closure."],items:[["灰度与回滚预案","Staged rollout and rollback plan"],["核心指标监控","Core metric monitoring"],["上线检查清单归档","Launch checklist archival"]]}
+];
+const metricGroups=[
+ {zh:"迁移",en:"Migration",items:[["82%",["整体迁移完成率","Overall migration"],"In progress",82],["91%",["账号迁移成功率","Account success"],"Stable",91],["76%",["设备迁移完成率","Device migration"],"Tracking",76],["12",["当前阻塞项","Open blockers"],"Review",35]]},
+ {zh:"稳定性",en:"Stability",items:[["99.4%",["崩溃率(无崩溃)","Crash-free"],"Healthy",94],["0.12%",["ANR 率","ANR rate"],"Target <0.2%",88],["99.1%",["API 成功率","API success"],"Stable",91],["97%",["离线恢复率","Offline recovery"],"Tracking",97]]},
+ {zh:"核心流程",en:"Core Flows",items:[["98.7%",["登录成功率","Login success"],"Stable",98],["95.2%",["设备绑定成功率","Binding success"],"Improving",95],["96.8%",["控制指令回读率","Control readback"],"Stable",96],["93.5%",["OTA 成功率","OTA success"],"Watch",93]]},
+ {zh:"业务价值",en:"Business Value",items:[["+18%",["新版 MAU 占比","New-app MAU ratio"],"Growing",62],["41%",["能源功能采用率","Energy adoption"],"Ramping",41],["34%",["储能场景使用率","ESS usage"],"Early",34],["4.4/5",["体验满意度","Satisfaction"],"Survey",88]]}
+];
+const faqs=[
+ {q:["为什么以产品线为中心组织网站？","Why is the site organized around the product line?"],a:["因为户用数字业务涉及 App、Web、经销商、边缘 EMS 与迁移多个模块，只有以产品线视角统一管理组合、生命周期、负责人和迁移状态，才能保证边界清晰、决策一致。","Residential digital work spans App, Web, dealer, edge EMS and migration. A product-line view keeps portfolio, lifecycle, ownership and migration state consistent, with clear boundaries."]},
+ {q:["ShineTools 归哪个产品线？","Which product line owns ShineTools?"],a:["ShineTools 属于服务与运维产品线，不在户用数字产品线范围内；本平台只覆盖终端用户与经销商的产品体验闭环。","ShineTools belongs to the Service & Operations product line. This platform only covers the end-user and dealer product experience loop."]},
+ {q:["旧版产品如何处理？","How are legacy products handled?"],a:["旧版维护优先，不做常规独立功能建设；任何例外需求都要经过产品评审，并按账号、电站、设备、历史数据逐步迁移到新版后再评估退场。","Legacy is maintenance-first with no routine standalone features. Exceptions require product review; retirement is assessed only after account, plant, device and history are migrated."]},
+ {q:["App/Web 的页面是怎么生成的？","How is App/Web UI generated?"],a:["页面与参数由 Device Type、Schema、Capability 和 Feature Matrix 共同驱动动态生成；设备不支持的能力会被隐藏或明确禁用，而不是显示空白。","UI and parameters are driven by device type, schema, capability and the feature matrix. Unsupported capabilities are hidden or explicitly disabled rather than shown blank."]},
+ {q:["“迁移成功”如何定义？","What counts as a successful migration?"],a:["迁移成功指数据已迁移、可核验，并在出现严重异常时可回滚；仅按版本时间强制切换不算迁移完成。","A successful migration means data is migrated, verifiable and reversible on serious failure. Forcing a cutover by release date alone does not count."]},
+ {q:["为什么不支持跨区账号查询？","Why is cross-region account lookup unsupported?"],a:["账号与数据按区域服务器隔离，受合规约束不支持跨区搜索。当前通过登录地区提示、账号异常弹窗和无电站排查入口缓解，长期方向是建设账号平台能力。","Accounts and data are isolated by regional servers under compliance constraints. We mitigate with region guidance, account-error prompts and no-plant troubleshooting now, and target an account-platform capability long term."]},
+ {q:["新设备怎样接入？","How is a new device enabled?"],a:["按立项、能力建模、平台接入、App/Web、验证、上线六个阶段推进，每个阶段都有检查清单和门槛，能力可复用已有组件。","Through six stages — initiation, capability model, platform enablement, App/Web, validation and launch — each with a checklist and gate, reusing existing capability components."]},
+ {q:["智能调度为什么每个电站只允许一台设备参与？","Why does only one device per plant join smart dispatch?"],a:["为避免多台设备在同一电站内产生调度冲突和能量策略互相抵消，平台约束每个电站仅一台设备参与智能调度，其余设备按监控与本地策略运行。","To avoid dispatch conflicts and energy strategies canceling each other within one plant, the platform allows a single smart-dispatch participant per plant; other devices run under monitoring and local strategy."]}
+];
+function capabilityPage(){
  const zh=lang==="zh";
+ const total=devices.length;
+ const rows=capabilityCatalog.map(c=>{const n=devices.filter(d=>d.capabilities.includes(c.cap)).length;const pct=Math.round(n/total*100);const models=devices.filter(d=>d.capabilities.includes(c.cap)).map(d=>d.model);return{...c,n,pct,models}});
+ return `${head("capability")}<div class="grid grid-4">${metric(String(capabilityCatalog.length),zh?"可复用能力":"Reusable Capabilities","Defined",100)}${metric(String(total),zh?"已建模设备":"Modeled Devices","Phase 1",Math.round(total/12*100))}${metric("App · Web",zh?"驱动的界面":"Driven Surfaces","Dynamic",100)}${metric("Schema",zh?"能力来源":"Capability Source","Structured",100)}</div>
+ <section class="section card"><div class="section-head"><div><h2>${zh?"能力目录与设备覆盖":"Capability Catalog & Device Coverage"}</h2><p>${zh?"能力决定 App 与 Web 可展示的页面和操作；覆盖率基于当前已建模的设备主数据。":"Capabilities determine the pages and actions exposed in App/Web; coverage is based on current modeled device master data."}</p></div></div>
+ <div class="table-wrap"><table><thead><tr><th>${zh?"能力":"Capability"}</th><th>${zh?"说明":"Description"}</th><th>${zh?"设备覆盖":"Device Coverage"}</th><th>${zh?"典型设备":"Representative Devices"}</th></tr></thead><tbody>
+ ${rows.map(r=>`<tr><td><b>${r.cap}</b><div class="list-sub">${r.zh}</div></td><td style="white-space:normal;max-width:320px;color:var(--muted)">${r.desc[zh?0:1]}</td><td style="min-width:180px"><div class="cap-meter"><div class="progress"><span style="width:${r.pct}%"></span></div><b>${r.n}/${total}</b></div></td><td style="white-space:normal;max-width:260px"><div class="tag-row">${r.models.slice(0,5).map(m=>`<span>${m}</span>`).join("")}${r.models.length>5?`<span>+${r.models.length-5}</span>`:""}</div></td></tr>`).join("")}
+ </tbody></table></div></section>
+ <section class="section grid grid-3">${quick("⌘",L[lang].schema,zh?"能力背后的结构化数据模型":"The structured data model behind capabilities","schema")}${quick("◇",L[lang].devices,zh?"查看每台设备的能力覆盖":"See per-device capability coverage","devices")}${quick("+",L[lang].enablement,zh?"新设备如何复用能力组件":"How new devices reuse capability components","enablement")}</section>`;
+}
+function schemaPage(){
+ const zh=lang==="zh";
+ const parts=[
+  {t:"Device Type",zh:"设备类型",d:["父子类型模型，定义设备族与继承关系。","Parent-child type model defining families and inheritance."],ex:["Hybrid Inverter","Storage / EMS","Microinverter","Collector"]},
+  {t:"Device Model",zh:"设备型号",d:["型号与固件元数据，绑定具体能力与参数范围。","Model and firmware metadata bound to concrete capabilities and ranges."],ex:["SPH","WIT","SPM","NOAH 2000"]},
+  {t:"Telemetry",zh:"遥测数据",d:["实时与历史数据点定义，含单位、精度与采样。","Realtime/history data points with unit, precision and sampling."],ex:["PV Power","SOC","Grid Power","Temperature"]},
+  {t:"Parameter",zh:"参数",d:["可读写参数，含范围、默认值与生效条件。","Read/write parameters with range, default and apply conditions."],ex:["Work Mode","Export Limit","Charge SOC","TOU Schedule"]},
+  {t:"Alarm",zh:"告警",d:["告警码、等级、原因与处理动作定义。","Alarm code, level, cause and handling action definitions."],ex:["DTC 5100","Grid Fault","Over Temp","Comm Loss"]},
+  {t:"Capability Map",zh:"能力映射",d:["将 Schema 聚合为能力，驱动 UI 动态展示。","Aggregates schema into capabilities that drive dynamic UI."],ex:["Monitoring","Control","Alarm","OTA"]}
+ ];
+ return `${head("schema")}
+ <section class="card"><div class="section-head"><div><h2>${zh?"从设备到界面的结构链":"From Device to Interface"}</h2><p>${zh?"结构化模型是设备能力动态展示的基础，逐层从类型收敛到界面。":"The structured model is the basis for dynamic capability rendering, converging layer by layer to the UI."}</p></div></div>
+ <div class="arch"><div class="arch-box"><div class="arch-title">Device Type</div><div class="arch-sub">${zh?"类型与继承":"Type & inheritance"}</div></div><div class="arch-box"><div class="arch-title">Schema</div><div class="arch-sub">${zh?"遥测 · 参数 · 告警":"Telemetry · parameter · alarm"}</div></div><div class="arch-box"><div class="arch-title">Capability</div><div class="arch-sub">${zh?"可复用能力集合":"Reusable capability set"}</div></div><div class="arch-box"><div class="arch-title">App / Web</div><div class="arch-sub">${zh?"动态页面与操作":"Dynamic pages & actions"}</div></div></div></section>
+ <section class="section"><div class="section-head"><div><h2>${zh?"Schema 组成":"Schema Components"}</h2><p>${zh?"每个设备型号都由以下结构化要素描述。":"Every device model is described by the following structured elements."}</p></div></div>
+ <div class="grid grid-3">${parts.map(p=>`<div class="card"><h3>${p.t}</h3><div class="list-sub" style="margin-bottom:10px">${p.zh}</div><p>${p.d[zh?0:1]}</p><div class="tag-row" style="margin-top:14px">${p.ex.map(e=>`<span>${e}</span>`).join("")}</div></div>`).join("")}</div></section>
+ <section class="section card"><h2>${zh?"设计原则":"Design Principles"}</h2><ul class="clean-list"><li><b>${zh?"结构先行":"Structure first"}</b> — ${zh?"能力来自 Schema，而非页面硬编码。":"Capabilities derive from schema, not hard-coded pages."}</li><li><b>${zh?"型号绑定固件":"Model binds firmware"}</b> — ${zh?"同型号不同固件可支持不同参数与告警。":"Same model with different firmware may expose different parameters and alarms."}</li><li><b>${zh?"能力可复用":"Capabilities are reusable"}</b> — ${zh?"新设备复用已有能力组件，减少重复建设。":"New devices reuse existing capability components, reducing rework."}</li></ul></section>`;
+}
+function enablementPage(){
+ const zh=lang==="zh";
+ return `${head("enablement")}
+ <section class="card"><div class="section-head"><div><h2>${zh?"新品兼容全流程":"New Device Enablement Flow"}</h2><p>${zh?"从立项到上线的六个阶段，每个阶段都有明确产出与检查清单。":"Six stages from initiation to launch, each with clear output and a checklist."}</p></div></div>
+ <div class="template-flow">${enablementStages.map(s=>`<span>${s.no} ${zh?s.zh:s.en}</span>`).join("")}</div></section>
+ <section class="section grid grid-2">${enablementStages.map(s=>`<div class="stage-card"><span class="stage-no">${s.no}</span><h3>${zh?s.zh:s.en}</h3><p>${s.desc[zh?0:1]}</p><ul>${s.items.map(i=>`<li>${i[zh?0:1]}</li>`).join("")}</ul></div>`).join("")}</section>
+ <section class="section card"><h2>${zh?"上线门槛":"Launch Gate"}</h2><div class="callout">${zh?"设备兼容、功能兼容、区域验收和正式上线必须分别记录，任一未达标不得对外宣称“已上线”。":"Device support, feature support, regional validation and production release must be recorded separately; none may be skipped before claiming a device is 'launched'."}</div></section>
+ <section class="section grid grid-3">${quick("⌘",L[lang].schema,zh?"阶段二的能力建模依据":"The modeling basis for stage two","schema")}${quick("▦",L[lang].compatibility,zh?"验证阶段的兼容矩阵":"The compatibility matrix used in validation","compatibility")}${quick("✓",L[lang].governance,zh?"各阶段的职责归属":"Ownership across stages","governance")}</section>`;
+}
+function governancePage(){
+ const zh=lang==="zh";
+ return `${head("governance")}
+ <section class="card"><div class="section-head"><div><h2>${zh?"职责分工":"Responsibility Model"}</h2><p>${zh?"明确产品、平台、设备、研发、测试与区域团队在户用产品线中的职责边界。":"Clarifies the responsibility boundaries of product, platform, device, engineering, QA and regional teams across the residential product line."}</p></div></div>
+ <div class="grid grid-3">${raciRoles.map(r=>`<div class="role-card"><div class="role-tag">${r.tag}</div><h3>${zh?r.zh:r.role}</h3><div class="list-sub">${zh?r.role:r.zh}</div><ul>${r.resp.map(x=>`<li>${x[zh?0:1]}</li>`).join("")}</ul></div>`).join("")}</div></section>
+ <section class="section card"><h2>${zh?"协作原则":"Collaboration Principles"}</h2><div class="boundary-grid"><div><b>1</b><p>${zh?"产品线负责体验与业务闭环":"Product line owns experience and business loop"}</p></div><div><b>2</b><p>${zh?"平台与设备提供共享底座":"Platform and device provide shared foundation"}</p></div><div><b>3</b><p>${zh?"决策与例外统一进 PRD 台账":"Decisions and exceptions go to the PRD register"}</p></div></div></section>
+ <section class="section grid grid-3">${quick("📄",L[lang].prd,zh?"决策与验收记录":"Decision and acceptance records","prd")}${quick("▥",L[lang].metrics,zh?"衡量责任落地的指标":"Metrics that measure accountability","metrics")}${quick("+",L[lang].enablement,zh?"跨团队协作的流程":"The cross-team process","enablement")}</section>`;
+}
+function metricsPage(){
+ const zh=lang==="zh";
+ return `${head("metrics")}
+ <section class="card"><div class="section-head"><div><h2>${zh?"指标体系":"Metrics System"}</h2><p>${zh?"围绕迁移、稳定性、核心流程与业务价值建立指标；用于产品线建设汇报，不代表线上生产数据。":"Metrics across migration, stability, core flows and business value; for product-line reporting, not production analytics."}</p></div><span class="release-chip">${zh?"示例数据":"Illustrative"}</span></div></section>
+ ${metricGroups.map(g=>`<section class="section kpi-group"><h3>${zh?g.zh:g.en}</h3><div class="grid grid-4">${g.items.map(it=>metric(it[0],it[1][zh?0:1],it[2],it[3])).join("")}</div></section>`).join("")}
+ <section class="section card"><h2>${zh?"指标使用原则":"How Metrics Are Used"}</h2><ul class="clean-list"><li><b>${zh?"分维度":"By dimension"}</b> — ${zh?"迁移、稳定性、流程与业务分开看，不混为单一分数。":"Migration, stability, flow and business are read separately, not as one score."}</li><li><b>${zh?"可执行":"Actionable"}</b> — ${zh?"每个指标关联负责人与改进项。":"Each metric maps to an owner and an improvement action."}</li><li><b>${zh?"可追溯":"Traceable"}</b> — ${zh?"关键指标可下钻到型号、区域与版本。":"Key metrics can drill down to model, region and release."}</li></ul></section>`;
+}
+function webPage(){
+ const zh=lang==="zh";
+ return `${head("web")}
+ <section class="section grid grid-2"><div class="card"><h3>${zh?"产品定位":"Product Positioning"}</h3><p>${zh?"ShineServer 是面向户用终端用户的 Web 门户，与新版 ShinePhone 共享统一账号、电站、设备模型与核心能力，适合大屏查看与批量管理场景。":"ShineServer is the residential Web portal for end users. It shares unified accounts, plants, device models and core capabilities with the new ShinePhone, suited to large-screen viewing and bulk management."}</p></div>
+ <div class="card"><h3>${zh?"与 App 的关系":"Relationship with the App"}</h3><p>${zh?"Web 与 App 共享同一套能力与数据；App 侧重移动与现场操作，Web 侧重总览、分析与多电站/多客户管理。":"Web and App share the same capabilities and data. The App focuses on mobile and on-site operations; the Web focuses on overview, analysis and multi-plant / multi-customer management."}</p></div></section>
+ <section class="section"><div class="section-head"><div><h2>${zh?"核心功能区":"Core Function Areas"}</h2><p>${zh?"实际功能与数据同样由用户所拥有的设备能力动态决定。":"Actual functions and data are likewise determined by the capabilities of the user's devices."}</p></div></div>
+ <div class="grid grid-3">${quick("📈",zh?"监控与分析":"Monitoring & Analytics",zh?"实时数据、历史曲线与能量流。":"Realtime data, history curves and energy flow.","capability")}${quick("⚡",zh?"能源管理":"Energy Management",zh?"自发自用、峰谷与收益分析。":"Self-consumption, TOU and revenue analysis.","capability")}${quick("⚠",zh?"告警处理":"Alarm Handling",zh?"告警总览、详情与处理建议。":"Alarm overview, detail and handling guidance.","schema")}${quick("👤",zh?"账号与电站":"Account & Plant",zh?"账号、电站、分享与权限管理。":"Account, plant, sharing and permission.","migration")}${quick("◇",zh?"设备状态":"Device Status",zh?"设备在线、固件与兼容情况。":"Device online, firmware and compatibility.","devices")}${quick("📄",zh?"报表导出":"Reports & Export",zh?"历史报表与数据导出。":"History reports and data export.","reference")}</div></section>
+ <section class="section card"><h2>${zh?"设计原则":"Design Principle"}</h2><div class="callout">${zh?"Web 不是 App 的缩水或复制，而是同一能力体系在大屏场景下的自然延伸，保持名称、单位、交互与反馈一致。":"The Web is not a stripped copy of the App but the same capability system extended to large screens, keeping naming, units, interaction and feedback consistent."}</div></section>`;
+}
+function legacyPage(){
+ const zh=lang==="zh";
+ return `${head("legacy")}<div class="grid grid-4">${metric(zh?"维护优先":"Maint.",zh?"投入策略":"Investment Policy","Maintenance",100)}${metric("2",zh?"旧版产品":"Legacy Products","App · Web",100)}${metric(zh?"需评审":"Review",zh?"例外机制":"Exception Path","Gated",60)}${metric("2027 Q1",zh?"退场评估":"Retirement Review","Planned",40)}</div>
+ <section class="section grid grid-2"><div class="card"><h3>${zh?"维护边界":"Maintenance Boundary"}</h3><p>${zh?"旧版仅进行缺陷修复、合规适配与关键稳定性维护，不进行常规独立功能建设。":"Legacy receives only bug fixes, compliance adaptation and critical stability maintenance — no routine standalone feature development."}</p></div>
+ <div class="card"><h3>${zh?"例外机制":"Exception Path"}</h3><p>${zh?"确有必要的例外需求，需说明业务价值与风险，经产品评审后才可排期，并同步评估对迁移的影响。":"Genuinely necessary exceptions must state business value and risk, pass product review before scheduling, and assess migration impact."}</p></div></section>
+ <section class="section"><div class="section-head"><div><h2>${zh?"旧版治理要点":"Legacy Governance"}</h2></div></div><div class="grid grid-3">${quick("🛠",zh?"维护优先":"Maintenance First",zh?"缺陷、合规与关键稳定性。":"Bug fixes, compliance and stability.","legacy")}${quick("⚖",zh?"例外评审":"Exception Review",zh?"例外需求统一评审排期。":"Exceptions reviewed and scheduled centrally.","prd")}${quick("⇄",zh?"迁移支持":"Migration Support",zh?"引导用户与数据迁移到新版。":"Guide users and data to the new products.","migration")}${quick("📉",zh?"退场指标":"Retirement Metrics",zh?"跟踪用户下降与剩余用户。":"Track usage decline and remaining users.","metrics")}${quick("📘",zh?"生命周期":"Lifecycle",zh?"状态、负责人与投入边界。":"Status, owner and investment boundary.","portfolio")}${quick("↩",zh?"回滚兜底":"Rollback",zh?"迁移异常时的恢复路径。":"Recovery path on migration failure.","migration")}</div></section>
+ <section class="section card"><h2>${zh?"退场门槛":"Retirement Gate"}</h2><div class="callout">${zh?"旧版退场必须具备明确门槛：关键数据已迁移并核验、剩余用户可控、具备回滚方案，不能仅按版本时间强制关闭。":"Retirement requires explicit gates: key data migrated and verified, remaining users under control, and a rollback plan — never a time-based forced shutdown."}</div></section>`;
+}
+function dealerPage(){
+ const zh=lang==="zh";
+ return `${head("dealer")}
+ <section class="strategy-strip"><div><span>${zh?"角色":"ROLE"}</span><b>${zh?"经销商与安装商":"Dealer & Installer"}</b></div><div><span>${zh?"入口":"ENTRY"}</span><b>App · Web</b></div><div><span>${zh?"边界":"BOUNDARY"}</span><b>${zh?"不含 ShineTools":"Excludes ShineTools"}</b></div></section>
+ <section class="section card"><h2>${zh?"任务闭环":"Task Loop"}</h2><div class="journey"><h3>♙ ${zh?"从建站到持续服务":"From plant setup to ongoing service"}</h3><div class="journey-flow">${zh?"创建客户/电站 → 绑定采集器 → 调试校验 → 验证数据与控制 → 交付与持续服务":"Create customer/plant → Bind collector → Commission → Validate data & control → Handover & service"}</div></div></section>
+ <section class="section"><div class="section-head"><div><h2>${zh?"核心能力":"Core Capabilities"}</h2><p>${zh?"覆盖客户、电站、安装、权限与基础运维协作。":"Covers customer, plant, installation, permission and basic O&M collaboration."}</p></div></div>
+ <div class="grid grid-3">${quick("♙",zh?"组织管理":"Organization",zh?"经销商组织与角色管理。":"Dealer organization and role management.","dealer")}${quick("👤",zh?"客户管理":"Customer",zh?"客户与账号关系维护。":"Customer and account relationship.","dealer")}${quick("🏠",zh?"电站管理":"Plant",zh?"户用电站组合与状态。":"Residential plant portfolio and status.","dealer")}${quick("🔧",zh?"安装调试":"Installation",zh?"绑定、调试与校验流程。":"Binding, commissioning and validation.","enablement")}${quick("🔐",zh?"权限协作":"Permissions",zh?"经销商与用户的授权协作。":"Dealer-user authorization and collaboration.","dealer")}${quick("🛠",zh?"基础运维":"Basic O&M",zh?"基础诊断与服务支持。":"Basic diagnostics and service support.","capability")}</div></section>
+ <section class="section card"><h2>${zh?"边界说明":"Boundary"}</h2><div class="callout">${zh?"经销商能力聚焦客户、电站、安装、权限与基础运维；深度运维与工具类能力由 ShineTools 所在的服务与运维产品线承载。":"Dealer capabilities focus on customer, plant, installation, permission and basic O&M; deep O&M and tooling belong to the Service & Operations line where ShineTools lives."}</div></section>`;
+}
+function edgePage(){
+ const zh=lang==="zh";
+ return `${head("edge")}<div class="grid grid-4">${metric(zh?"本地":"Local",zh?"控制位置":"Control Location","On-site",100)}${metric("1",zh?"每站调度设备":"Dispatch / Plant","Constraint",100)}${metric(zh?"离线可用":"Offline",zh?"断网策略":"Offline Strategy","Persist",90)}${metric(zh?"自动":"Auto",zh?"恢复机制":"Recovery","Reconnect",95)}</div>
+ <section class="section card"><div class="section-head"><div><h2>${zh?"边缘 EMS 定位":"Home Edge EMS"}</h2><p>${zh?"连接云平台与家庭设备，承载本地控制、能源策略、智能调度与离线恢复。":"Connects cloud and home devices for local control, energy strategy, smart dispatch and offline recovery."}</p></div></div>
+ <div class="grid grid-3">${quick("🎛",zh?"本地控制":"Local Control",zh?"参数与运行模式本地下发。":"Local parameter and mode delivery.","capability")}${quick("🧠",zh?"能源策略":"Energy Strategy",zh?"自发自用、备电与峰谷套利。":"Self-consumption, backup and tariff arbitrage.","capability")}${quick("⚡",zh?"智能调度":"Smart Dispatch",zh?"每个电站仅一台设备参与调度。":"One dispatch participant per plant.","capability")}${quick("📴",zh?"离线行为":"Offline Behavior",zh?"断网时策略保持与降级。":"Strategy persistence and fallback offline.","edge")}${quick("↻",zh?"恢复机制":"Recovery",zh?"重连、状态恢复与异常兜底。":"Reconnect, state recovery and fallback.","edge")}${quick("◇",zh?"设备兼容":"Compatibility",zh?"型号、固件与参数差异。":"Model, firmware and parameter differences.","devices")}</div></section>
+ <section class="section card"><h2>${zh?"关键约束":"Key Constraint"}</h2><div class="callout">${zh?"一个电站可包含多个采集器，每个采集器可连接多个设备；但每个电站仅允许一台设备参与智能调度，避免策略冲突。":"A plant may contain multiple collectors, each connecting multiple devices; but only one device per plant may join smart dispatch, to avoid strategy conflicts."}</div></section>`;
+}
+function faqPage(){
+ const zh=lang==="zh";
+ return `${head("faq")}
+ <section class="card"><div class="section-head"><div><h2>${zh?"常见问题":"Frequently Asked Questions"}</h2><p>${zh?"产品、平台、设备与治理的统一问答入口。":"A unified entry for product, platform, device and governance questions."}</p></div></div>
+ ${faqs.map(f=>`<details class="faq-item"><summary>${f.q[zh?0:1]}</summary><div class="faq-body">${f.a[zh?0:1]}</div></details>`).join("")}</section>
+ <section class="section grid grid-3">${quick("📘",L[lang].handbook,zh?"完整的产品手册正文":"The full product handbook","handbook")}${quick("📄",L[lang].prd,zh?"需求与决策台账":"Requirement and decision register","prd")}${quick("≡",L[lang].reference,zh?"知识资产目录":"Knowledge asset catalog","reference")}</section>`;
+}
+function renderPage(){
  if(current.startsWith("device-")){document.getElementById("content").innerHTML=deviceDetailPage(current.slice(7));renderNav();window.scrollTo(0,0);return;}
  const views={
   home:homePage,portfolio:portfolioPage,residential:residentialPage,platform:platformPage,devices:devicesPage,migration:migrationPage,roadmap:roadmapPage,updates:updatesPage,handbook:handbookPage,compatibility:compatibilityPage,prd:prdPage,
   shinephone:shinephonePage,
-  web:()=>generic("web",[["📈","Monitoring","Realtime and historical data"],["🎛","Control","Shared control capabilities with App"],["⚡","Energy","Energy flow and analysis"],["⚠","Alarm","Alarm overview and handling"],["👤","Account","User, plant and sharing"],["◇","Device","Device status and compatibility"]]),
-  legacy:()=>generic("legacy",[["🛠","Maintenance First","Bug fixes, compliance and critical stability"],["⛔","No Routine Features","No routine standalone feature development"],["⚖","Exception Review","Exceptions require product review"],["⇄","Migration Support","Guide users and data to new products"],["📉","Retirement Metrics","Track usage decline and remaining users"],["📘","Lifecycle","Status, owner, scope and lifecycle"]]),
-  dealer:()=>generic("dealer",[["♙","Dealer Organization","Organization and role management"],["👤","Customer Management","Customer and account relationship"],["🏠","Plant Management","Residential plant portfolio"],["🔧","Installation","Binding and commissioning workflow"],["🔐","Permissions","Dealer-user collaboration and access"],["🛠","Basic O&M","Basic residential diagnostics"]]),
-  edge:()=>generic("edge",[["🎛",zh?"本地控制":"Local Control",zh?"参数与运行模式本地下发":"Local parameter and mode delivery"],["🧠",zh?"能源策略":"Energy Strategy",zh?"自发自用、备电和峰谷套利":"Self-consumption, backup and tariff arbitrage"],["⚡",zh?"智能调度":"Smart Dispatch",zh?"每个电站仅一台设备参与调度":"One dispatch participant per plant"],["📴",zh?"离线行为":"Offline Behavior",zh?"断网时策略保持和降级":"Strategy persistence and fallback"],["↻",zh?"恢复机制":"Recovery",zh?"重连、状态恢复和异常兜底":"Reconnect, state recovery and exception handling"],["◇",zh?"设备兼容":"Compatibility",zh?"型号、固件和参数差异":"Model, firmware and parameter differences"]]),
-  capability:()=>generic("capability",[["📊","Monitoring Capability","Realtime, history and statistics"],["🎛","Control Capability","Parameters, modes and schedules"],["⚠","Alarm Capability","Alarm schema and troubleshooting"],["⬆","OTA Capability","Firmware eligibility and rollout"],["⚡","Energy Capability","Energy flow and optimization"],["🔐","Permission Capability","Role and access control"]]),
-  schema:()=>generic("schema",[["🧩","Device Type","Parent-child type model"],["🧾","Device Model","Model and firmware metadata"],["📊","Telemetry Schema","Realtime and historical points"],["🎛","Parameter Schema","Readable and writable parameters"],["⚠","Alarm Schema","Codes, levels, causes and actions"],["✦","Capability Mapping","Schema-to-capability relationship"]]),
-  enablement:()=>generic("enablement",[["1","Initiation","Business goal and target regions"],["2","Capability Model","Device type, schema and capability"],["3","Platform Enablement","Cloud, account and data services"],["4","App / Web","UI, interaction and feature exposure"],["5","Validation","Firmware, test and region validation"],["6","Launch","Gradual rollout, metrics and checklist"]]),
-  governance:()=>generic("governance",[["👤","Residential PM","Portfolio, priority and outcomes"],["📘","Product Specialist","Requirement detail and delivery support"],["☁","Platform PM","Shared platform capability"],["◇","Device PM","Device model and enablement"],["🧪","QA","Quality strategy and validation"],["🌍","Regional Teams","Market needs and launch validation"]]),
-  metrics:()=>generic("metrics",[["⇄","Migration","New MAU ratio · Success · Remaining users"],["✓","Stability","Crash · ANR · API failure · Offline"],["↗","Core Flows","Login · Plant · Binding · Control · OTA"],["◇","Compatibility","Enablement cycle · Firmware coverage"],["▥","Business","MAU · Energy adoption · ESS usage"],["💬","Experience","Complaints · Satisfaction · Task success"]]),
+  web:webPage,
+  legacy:legacyPage,
+  dealer:dealerPage,
+  edge:edgePage,
+  capability:capabilityPage,
+  schema:schemaPage,
+  enablement:enablementPage,
+  governance:governancePage,
+  metrics:metricsPage,
   reference:referencePage,
-  faq:()=>generic("faq",[["?","Why product-line centric?","To manage portfolio, lifecycle, migration and ownership consistently."],["?","Who owns ShineTools?","Service & Operations product line."],["?","How are legacy products handled?","Maintenance first; exceptions require review."],["?","How is UI generated?","By device schema and capability mapping."],["?","What is migration success?","Migrated, verified and reversible when required."],["?","How are new devices enabled?","Capability, schema, platform, UI, test and launch gates."]])
+  faq:faqPage
  };
  document.getElementById("content").innerHTML=(views[current]||views.home)(); renderNav(); window.scrollTo(0,0);
 }
