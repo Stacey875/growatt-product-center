@@ -1,5 +1,15 @@
 # Changelog
 
+## V2.0 — Device Center
+
+- Rebuilt Device Center as a structured, interactive product data hub.
+- Added 12 device records across inverter, hybrid, storage, battery, meter, collector, charging, and microinverter families.
+- Added taxonomy filters and model/DTC/capability/region search.
+- Added device detail routes with capability coverage, parameters, firmware, regions, supported collectors, and linked knowledge assets.
+- Preserved all V1.6 pages and content as the incremental baseline.
+- Updated application version and cache keys to 2.0.0.
+
+
 ## V1.6 — PRD & Decision Center
 
 - Added structured PRD and decision register.

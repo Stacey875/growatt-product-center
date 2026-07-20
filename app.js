@@ -18,6 +18,8 @@ const L={
 let lang=localStorage.getItem("gpc-lang")||"zh";
 let current=location.hash.replace("#/","")||"home";
 let portfolioFilter="All";
+let deviceTypeFilter="All";
+let deviceQuery="";
 
 const nav=[
  ["Overview",[["home","⌂"],["portfolio","▦"],["roadmap","↗"],["updates","◷"]]],
@@ -60,14 +62,18 @@ const portfolio=[
  {name:"Home Edge EMS",channel:"Edge",status:"Current",owner:"Residential PM",scope:"Home energy",release:"2027 Q1",migration:"N/A"}
 ];
 const devices=[
- {model:"SPM",type:"Storage / EMS",status:"Active",priority:"P0",cap:"Monitoring · Control · Energy · OTA",fw:"2.x+"},
- {model:"WIT",type:"Hybrid Inverter",status:"Active",priority:"P0",cap:"Monitoring · Control · Alarm · OTA",fw:"Latest"},
- {model:"SPH",type:"Hybrid Inverter",status:"Active",priority:"P0",cap:"Monitoring · Control · Alarm",fw:"Latest"},
- {model:"MINA",type:"Inverter",status:"Planning",priority:"P1",cap:"Monitoring · Energy",fw:"TBD"},
- {model:"MIN",type:"Inverter",status:"Active",priority:"P1",cap:"Monitoring · Energy · Alarm",fw:"Latest"},
- {model:"MOD",type:"Inverter",status:"Active",priority:"P1",cap:"Monitoring · Energy · Alarm",fw:"Latest"},
- {model:"EV Charger",type:"Charging",status:"Active",priority:"P1",cap:"Monitoring · Control · Schedule",fw:"Latest"},
- {model:"Meter",type:"Measurement",status:"Active",priority:"P0",cap:"Realtime · History · Energy",fw:"Latest"}
+ {id:"sph",model:"SPH",family:"Hybrid",type:"Hybrid Inverter",status:"Active",priority:"P0",regions:["EU","AU","Global"],collectors:["ShineWiFi-X","ShineLAN-X","Shine4G-X"],capabilities:["Monitoring","Control","Alarm","History","Energy","OTA"],firmware:"Latest",dtc:"3502 / 3503",summary:"Residential hybrid inverter family for PV, battery and backup energy management.",parameters:["Operating mode","Backup SOC","Charge/discharge schedule","Export limit"],docs:["Product Handbook","Compatibility Matrix","Login Region PRD"]},
+ {id:"wit",model:"WIT",family:"Hybrid",type:"Hybrid Inverter",status:"Active",priority:"P0",regions:["EU","AU","CN"],collectors:["ShineWiFi-X","Shine4G-X","ShineMaster"],capabilities:["Monitoring","Control","Alarm","History","Energy","OTA","Scheduler"],firmware:"Latest",dtc:"5603",summary:"Hybrid inverter family supporting advanced energy control and storage scenarios.",parameters:["Work mode","SOC reserve","TOU schedule","Grid limit"],docs:["Product Handbook","Device Matrix","Enablement Workflow"]},
+ {id:"spm",model:"SPM",family:"Storage",type:"Storage / EMS",status:"Active",priority:"P0",regions:["AU"],collectors:["Integrated Gateway"],capabilities:["Monitoring","Control","Alarm","History","Energy","OTA","Scheduler"],firmware:"2.x+",dtc:"21300",summary:"Integrated residential storage and energy management platform.",parameters:["Charge SOC","Discharge SOC","Work mode","Smart dispatch"],docs:["SPM Parameters","Compatibility Matrix","EMS Handbook"]},
+ {id:"min",model:"MIN",family:"Inverter",type:"PV Inverter",status:"Active",priority:"P1",regions:["EU","AU","Global"],collectors:["ShineWiFi-X","ShineLAN-X"],capabilities:["Monitoring","Alarm","History","Energy","OTA"],firmware:"Latest",dtc:"5100",summary:"Residential string inverter family for compact PV installations.",parameters:["Export limit","Power factor","Grid code"],docs:["Compatibility Matrix","Alarm Dictionary"]},
+ {id:"mod",model:"MOD",family:"Inverter",type:"PV / Hybrid Inverter",status:"Active",priority:"P1",regions:["EU","AU"],collectors:["ShineWiFi-X","Shine4G-X"],capabilities:["Monitoring","Control","Alarm","History","Energy","OTA"],firmware:"Latest",dtc:"5400",summary:"Three-phase residential inverter family with storage-ready variants.",parameters:["Export limit","Battery mode","Grid parameters"],docs:["Compatibility Matrix","Device Schema"]},
+ {id:"mina",model:"MINA",family:"Inverter",type:"PV Inverter",status:"Planning",priority:"P1",regions:["TBD"],collectors:["TBD"],capabilities:["Monitoring","Energy"],firmware:"TBD",dtc:"TBD",summary:"Planned inverter family pending capability and regional validation.",parameters:["TBD"],docs:["Enablement Workflow"]},
+ {id:"neo",model:"NEO",family:"Microinverter",type:"Microinverter",status:"Active",priority:"P1",regions:["EU"],collectors:["NEO Gateway"],capabilities:["Monitoring","Alarm","History","Energy","OTA"],firmware:"Latest",dtc:"5202 / 5203",summary:"Microinverter family for distributed residential PV systems.",parameters:["Power limit","Grid profile"],docs:["Compatibility Matrix"]},
+ {id:"noah",model:"NOAH 2000",family:"Storage",type:"Balcony Storage",status:"Active",priority:"P1",regions:["EU"],collectors:["Integrated Wi-Fi"],capabilities:["Monitoring","Control","Alarm","Energy","OTA","Scheduler"],firmware:"Latest",dtc:"30040",summary:"Balcony storage product for self-consumption and scheduled energy use.",parameters:["SOC reserve","Charge schedule","Discharge power"],docs:["Compatibility Matrix"]},
+ {id:"ev",model:"EV Charger",family:"Charging",type:"EV Charging",status:"Active",priority:"P1",regions:["EU","AU"],collectors:["Wi-Fi","LAN"],capabilities:["Monitoring","Control","History","Energy","Scheduler","OTA"],firmware:"Latest",dtc:"Multiple",summary:"Residential EV charging family integrated with plant energy flows.",parameters:["Charge current","Schedule","PV surplus mode"],docs:["Charging Handbook"]},
+ {id:"meter",model:"Smart Meter",family:"Meter",type:"Measurement",status:"Active",priority:"P0",regions:["Global"],collectors:["RS485 via inverter / collector"],capabilities:["Monitoring","History","Energy"],firmware:"Latest",dtc:"Multiple",summary:"Metering devices providing grid, load and export measurements.",parameters:["Address","Direction","CT ratio"],docs:["Meter Integration Guide"]},
+ {id:"logger",model:"Datalogger",family:"Collector",type:"Collector / Gateway",status:"Active",priority:"P0",regions:["Global"],collectors:["N/A"],capabilities:["Connectivity","Discovery","Command","OTA","Offline Recovery"],firmware:"Latest",dtc:"Multiple",summary:"Communication gateway connecting cloud, plant and field devices.",parameters:["Network","RS485 address","RF pairing","Reporting interval"],docs:["Collector Protocol","Enablement Workflow"]},
+ {id:"battery",model:"Battery System",family:"Battery",type:"Battery",status:"Active",priority:"P1",regions:["EU","AU","Global"],collectors:["Via compatible inverter"],capabilities:["Monitoring","Alarm","History","Energy"],firmware:"Model dependent",dtc:"Multiple",summary:"Battery families exposed through compatible inverter and storage systems.",parameters:["SOC limits","Charge current","Reserve SOC"],docs:["Battery Compatibility Guide"]}
 ];
 const recentDocs=[
  {type:"Handbook",title:"New ShinePhone & ShineServer Product Design Handbook",owner:"Residential PM",updated:"2026-07-19",status:"Draft"},
@@ -85,9 +91,9 @@ const searchIndex=[
  ["home","Growatt Product Center","产品知识平台 / Product knowledge platform"],["portfolio","Product Portfolio","生命周期 Owner Scope Status"],
  ["residential","Residential Digital Products","户用数字产品线"],["shinephone","New ShinePhone","新版 ShinePhone App"],
  ["migration","Migration Center","账号 电站 设备 历史数据"],["edge","Home Edge EMS","本地控制 能源策略 智能调度"],
- ["devices","Device Center","SPM WIT SPH MINA MIN MOD"],["capability","Capability Center","Monitoring Control Alarm OTA Energy"],
+ ["devices","Device Center","SPM WIT SPH MINA MIN MOD NEO NOAH EV Charger Meter Datalogger Battery"],["capability","Capability Center","Monitoring Control Alarm OTA Energy"],
  ["schema","Device Schema","Telemetry Parameter Alarm Control"],["enablement","New Device Enablement","Capability Schema Test Region Launch"],
- ["metrics","Metrics Center","Migration Stability Core Flow Compatibility Business"],["updates","GPC V1.6","PRD decision center release governance"],["governance","Product Governance","RACI ownership responsibility"],["handbook","New ShinePhone Product Handbook","产品定位 主要客户 功能 页面 设备体系"],["prd","Login Region PRD","登录地区 无电站 异常排查 决策 验收"],["compatibility","Residential Compatibility Matrix","机型 DTC 参数设置 故障告警 历史数据 智能调度"],["reference","Product Handbook PRD Release Notes","Handbook PRD compatibility matrix process"],["residential","Users and Roles","End User Dealer Installer Product R&D Regional Team"]
+ ["metrics","Metrics Center","Migration Stability Core Flow Compatibility Business"],["updates","GPC V2.0","Device center detail capability parameter firmware collector"],["governance","Product Governance","RACI ownership responsibility"],["handbook","New ShinePhone Product Handbook","产品定位 主要客户 功能 页面 设备体系"],["prd","Login Region PRD","登录地区 无电站 异常排查 决策 验收"],["compatibility","Residential Compatibility Matrix","机型 DTC 参数设置 故障告警 历史数据 智能调度"],["reference","Product Handbook PRD Release Notes","Handbook PRD compatibility matrix process"],["residential","Users and Roles","End User Dealer Installer Product R&D Regional Team"]
 ];
 
 function badge(s){
@@ -106,7 +112,7 @@ function timeline(date,title,desc){
 function shell(){
  return `<div class="app"><div class="overlay" id="overlay"></div><aside class="sidebar" id="sidebar">
   <div class="brand"><div class="brand-mark">G</div><div><div class="brand-title">Growatt Product Center</div><div class="brand-sub">Product Knowledge Platform</div></div></div>
-  <div id="nav"></div><div class="sidebar-footer">V1.5 · Real Content Integration<br>Handbook + compatibility data</div>
+  <div id="nav"></div><div class="sidebar-footer">V2.0 · Device Center<br>Incremental product platform</div>
  </aside><main class="main"><header class="topbar">
   <button class="mobile-menu" id="mobileMenu">☰</button><div class="search-wrap"><span class="search-icon">⌕</span>
   <input id="search" class="search" placeholder="${L[lang].search}"><span class="kbd">/</span><div id="searchResults" class="search-results"></div></div>
@@ -118,17 +124,17 @@ function renderNav(){
  document.querySelectorAll(".nav-item").forEach(el=>el.onclick=()=>go(el.dataset.page));
 }
 function head(id){
- return `<div class="breadcrumb">Growatt Product Center / ${L[lang][id]}</div><div class="page-head"><div><h1>${L[lang][id]}</h1><p>${descriptions[id][lang==="zh"?0:1]}</p></div>${badge("V1.4")}</div>`;
+ return `<div class="breadcrumb">Growatt Product Center / ${L[lang][id]}</div><div class="page-head"><div><h1>${L[lang][id]}</h1><p>${descriptions[id][lang==="zh"?0:1]}</p></div>${badge("V2.0")}</div>`;
 }
 function homePage(){
  const zh=lang==="zh";
  const docRows=recentDocs.map(d=>`<div class="doc-row"><span class="doc-type">${d.type}</span><div><div class="list-title">${d.title}</div><div class="list-sub">${d.owner} · ${d.updated}</div></div>${badge(d.status)}</div>`).join("");
- return `<section class="hero hero-v14"><div class="hero-kicker">● ${zh?"V1.4 产品知识 MVP":"V1.4 Product Knowledge MVP"}</div>
+ return `<section class="hero hero-v14"><div class="hero-kicker">● ${zh?"V2.0 正式开发版":"V2.0 Product Platform"}</div>
   <h1>${zh?"Growatt Product Center":"Growatt Product Center"}</h1>
   <p>${zh?"面向户用数字产品线的统一知识入口：连接产品组合、用户场景、设备能力、迁移治理、版本状态与真实产品资料。":"The unified knowledge entry for Residential Digital Products, connecting portfolio, user scenarios, device capabilities, migration governance, release status, and product documentation."}</p>
   <div class="hero-actions"><button class="btn btn-primary" onclick="go('residential')">${L[lang].openResidential}</button><button class="btn btn-ghost" onclick="go('reference')">${zh?"查看产品资料":"Browse product assets"}</button></div>
-  <div class="hero-status"><span><b>Current focus</b>${zh?"新版 ShinePhone 与设备能力模型":"New ShinePhone & device capability model"}</span><span><b>Latest update</b>2026-07-19</span><span><b>Owner</b>Residential Product Lead</span></div></section>
- <section class="section"><div class="section-head"><div><h2>${zh?"产品运行概览":"Product Operating Overview"}</h2><p>${zh?"用于汇报产品线建设状态，不代表线上生产数据。":"Leadership view of product-line readiness; not production analytics."}</p></div><span class="release-chip">V1.4 MVP</span></div>
+  <div class="hero-status"><span><b>Current focus</b>${zh?"新版 ShinePhone 与设备能力模型":"New ShinePhone & device capability model"}</span><span><b>Latest update</b>2026-07-20</span><span><b>Owner</b>Residential Product Lead</span></div></section>
+ <section class="section"><div class="section-head"><div><h2>${zh?"产品运行概览":"Product Operating Overview"}</h2><p>${zh?"用于汇报产品线建设状态，不代表线上生产数据。":"Leadership view of product-line readiness; not production analytics."}</p></div><span class="release-chip">V2.0</span></div>
  <div class="grid grid-4">${metric("6",zh?"产品模块":"Product Modules","Mapped",100)}${metric("8",zh?"设备族":"Device Families","Phase 1",72)}${metric("4",zh?"知识资产":"Knowledge Assets","Connected",75)}${metric("3",zh?"关键工作流":"Core Workflows","Defined",68)}</div></section>
  <section class="section"><div class="section-head"><div><h2>${zh?"快速入口":"Quick Access"}</h2><p>${zh?"从产品、平台、设备和迁移四个视角进入。":"Enter from product, platform, device, or migration views."}</p></div></div><div class="grid grid-4">
  ${quick("📱",zh?"户用产品线":"Residential Products",zh?"产品定位、用户、组合与生命周期":"Positioning, users, portfolio and lifecycle","residential")}${quick("☁",zh?"平台架构":"Platform Architecture",zh?"Cloud、Plant、Collector、Device":"Cloud, plant, collector and device","platform")}${quick("◇",zh?"设备中心":"Device Center",zh?"型号、能力、固件与接入状态":"Model, capability, firmware and enablement","devices")}${quick("⇄",zh?"迁移中心":"Migration Center",zh?"账号、电站、设备、历史数据与回滚":"Account, plant, device, history and rollback","migration")}</div></section>
@@ -166,13 +172,22 @@ function platformPage(){
 }
 function devicesPage(){
  const zh=lang==="zh";
- return `${head("devices")}<section class="card"><div class="section-head"><div><h2>${zh?"设备兼容矩阵":"Device Compatibility Matrix"}</h2><p>${zh?"第一阶段展示模型、优先级、能力和固件范围。":"Phase one covers model, priority, capability and firmware range."}</p></div></div>
- <div class="table-wrap"><table><thead><tr><th>Model</th><th>Type</th><th>Status</th><th>Priority</th><th>Capabilities</th><th>Firmware</th></tr></thead><tbody>
- ${devices.map(d=>`<tr class="clickable"><td><b>${d.model}</b></td><td>${d.type}</td><td>${badge(d.status)}</td><td>${badge(d.priority)}</td><td>${d.cap}</td><td>${d.fw}</td></tr>`).join("")}
- </tbody></table></div></section>
- <section class="section grid grid-4">${quick("📊","Monitoring",zh?"实时数据、历史和统计":"Realtime, history and statistics","capability")}${quick("🎛","Control",zh?"参数、模式和计划":"Parameters, modes and schedules","capability")}${quick("⚠","Alarm",zh?"告警模型和排查":"Alarm model and troubleshooting","schema")}${quick("⬆","OTA",zh?"固件资格和灰度":"Firmware eligibility and rollout","enablement")}</section>`;
+ const types=["All",...new Set(devices.map(d=>d.family))];
+ const q=deviceQuery.trim().toLowerCase();
+ const rows=devices.filter(d=>(deviceTypeFilter==="All"||d.family===deviceTypeFilter)&&(!q||[d.model,d.type,d.family,d.dtc,...d.capabilities,...d.regions].join(" ").toLowerCase().includes(q)));
+ return `${head("devices")}<section class="device-hero"><div><span class="eyebrow">V2.0 DEVICE PLATFORM</span><h2>${zh?"以设备为中心连接能力、参数、固件与产品资料":"Connect capabilities, parameters, firmware and product assets around each device"}</h2><p>${zh?"当前为第一阶段设备主数据。点击任一设备进入详情页。":"Phase-one device master data. Open any device for a structured detail view."}</p></div><div class="device-summary"><b>${devices.length}</b><span>${zh?"设备记录":"device records"}</span></div></section>
+ <div class="device-toolbar"><div class="segment device-segment">${types.map(t=>`<button class="${deviceTypeFilter===t?"active":""}" onclick="setDeviceTypeFilter('${t}')">${t}</button>`).join("")}</div><input class="matrix-search" value="${deviceQuery}" oninput="setDeviceQuery(this.value)" placeholder="${zh?"搜索型号、DTC、能力或区域":"Search model, DTC, capability or region"}"></div>
+ <div class="device-layout"><aside class="device-taxonomy card"><h3>${zh?"设备分类":"Device taxonomy"}</h3>${types.slice(1).map(t=>`<button onclick="setDeviceTypeFilter('${t}')"><span>${t}</span><b>${devices.filter(d=>d.family===t).length}</b></button>`).join("")}</aside>
+ <section><div class="result-meta">${zh?`找到 ${rows.length} 个设备`:`${rows.length} devices found`}</div><div class="device-grid">${rows.map(d=>`<article class="device-card" onclick="openDevice('${d.id}')"><div class="device-card-top"><span class="device-family">${d.family}</span>${badge(d.status)}</div><div class="device-monogram">${d.model.slice(0,3)}</div><h3>${d.model}</h3><p>${d.type}</p><div class="device-tags">${d.capabilities.slice(0,4).map(c=>`<span>${c}</span>`).join("")}${d.capabilities.length>4?`<span>+${d.capabilities.length-4}</span>`:""}</div><div class="device-card-foot"><span>DTC ${d.dtc}</span><b>${zh?"查看详情 →":"View details →"}</b></div></article>`).join("")||`<div class="card empty-state">${zh?"没有匹配的设备":"No matching devices"}</div>`}</div></section></div>`;
 }
-
+function deviceDetailPage(id){
+ const zh=lang==="zh",d=devices.find(x=>x.id===id)||devices[0];
+ return `<div class="breadcrumb"><a onclick="go('devices')">${L[lang].devices}</a> / ${d.model}</div><section class="device-detail-head"><button class="back-btn" onclick="go('devices')">← ${zh?"返回设备中心":"Back to Device Center"}</button><div class="device-title-row"><div><span class="eyebrow">${d.family} · DTC ${d.dtc}</span><h1>${d.model}</h1><p>${d.summary}</p></div><div>${badge(d.status)} ${badge(d.priority)}</div></div></section>
+ <div class="device-detail-grid"><main><section class="card"><div class="section-head"><div><h2>${zh?"能力覆盖":"Capability coverage"}</h2><p>${zh?"能力决定 App 与 Web 可展示的页面和操作。":"Capabilities determine the pages and actions exposed in App and Web."}</p></div></div><div class="capability-board">${["Monitoring","Control","Alarm","History","Energy","OTA","Scheduler","Connectivity"].map(c=>`<div class="capability-cell ${d.capabilities.includes(c)?"supported":""}"><span>${d.capabilities.includes(c)?"✓":"—"}</span><b>${c}</b></div>`).join("")}</div></section>
+ <section class="section card"><h2>${zh?"参数与控制项":"Parameters & controls"}</h2><div class="parameter-list">${d.parameters.map((p,i)=>`<div><span>${String(i+1).padStart(2,"0")}</span><b>${p}</b><small>${zh?"具体范围取决于型号、固件与区域配置":"Exact range depends on model, firmware and region"}</small></div>`).join("")}</div></section>
+ <section class="section card"><h2>${zh?"关联知识资产":"Linked knowledge assets"}</h2><div class="linked-assets">${d.docs.map(x=>`<button onclick="go('${x.includes("Compatibility")?"compatibility":x.includes("Handbook")?"handbook":"reference"}')"><span>📄</span><b>${x}</b><small>${zh?"打开资料":"Open asset"} →</small></button>`).join("")}</div></section></main>
+ <aside><section class="card facts"><h3>${zh?"设备信息":"Device facts"}</h3><div><span>Type</span><b>${d.type}</b></div><div><span>Firmware</span><b>${d.firmware}</b></div><div><span>Regions</span><b>${d.regions.join(" · ")}</b></div><div><span>Priority</span><b>${d.priority}</b></div></section><section class="section card facts"><h3>${zh?"支持采集器":"Supported collectors"}</h3>${d.collectors.map(x=>`<div><span>◇</span><b>${x}</b></div>`).join("")}</section></aside></div>`;
+}
 function shinephonePage(){
  const zh=lang==="zh";
  return `${head("shinephone")}
@@ -266,6 +281,7 @@ function roadmapPage(){
 function updatesPage(){return `${head("updates")}<div class="card timeline">${timeline("2026-07-19","GPC V1.6","Imported handbook core content and real device compatibility data with searchable model matrix.")}${timeline("2026-07-19","GPC V1.6","Product knowledge MVP: operating dashboard, user model, lifecycle, platform data flow and asset catalog.")}${timeline("2026-07-18","Login Region Experience","Added region consistency guidance and no-plant troubleshooting.")}${timeline("2026-07-17","Residential IA V3","Reorganized around current, legacy, migration, edge EMS and governance.")}</div>`;}
 function renderPage(){
  const zh=lang==="zh";
+ if(current.startsWith("device-")){document.getElementById("content").innerHTML=deviceDetailPage(current.slice(7));renderNav();window.scrollTo(0,0);return;}
  const views={
   home:homePage,portfolio:portfolioPage,residential:residentialPage,platform:platformPage,devices:devicesPage,migration:migrationPage,roadmap:roadmapPage,updates:updatesPage,handbook:handbookPage,compatibility:compatibilityPage,prd:prdPage,
   shinephone:shinephonePage,
@@ -285,6 +301,9 @@ function renderPage(){
 }
 function go(page){current=page;location.hash="#/"+page;renderPage();document.getElementById("sidebar").classList.remove("open");document.getElementById("overlay").classList.remove("show")}
 function setPortfolioFilter(f){portfolioFilter=f;renderPage()}
+function setDeviceTypeFilter(v){deviceTypeFilter=v;renderPage()}
+function setDeviceQuery(v){deviceQuery=v;renderPage();setTimeout(()=>{const el=document.querySelector(".device-toolbar .matrix-search");if(el){el.focus();el.setSelectionRange(v.length,v.length)}},0)}
+function openDevice(id){go("device-"+id)}
 function setPrdFilter(v){prdFilter=v;renderPage()}
 function setCompatibilityQuery(v){compatibilityQuery=v;renderPage();setTimeout(()=>{const el=document.querySelector(".matrix-search");if(el){el.focus();el.setSelectionRange(v.length,v.length)}},0)}
 function setupSearch(){
@@ -302,5 +321,5 @@ function bind(){
  btn.onclick=()=>{side.classList.add("open");overlay.classList.add("show")};overlay.onclick=()=>{side.classList.remove("open");overlay.classList.remove("show")};
 }
 function init(){document.getElementById("app").innerHTML=shell();renderNav();renderPage();setupSearch();bind()}
-window.go=go;window.setPortfolioFilter=setPortfolioFilter;window.setPrdFilter=setPrdFilter;window.setCompatibilityQuery=setCompatibilityQuery;init();
+window.go=go;window.openDevice=openDevice;window.setDeviceTypeFilter=setDeviceTypeFilter;window.setDeviceQuery=setDeviceQuery;window.setPortfolioFilter=setPortfolioFilter;window.setPrdFilter=setPrdFilter;window.setCompatibilityQuery=setCompatibilityQuery;init();
 window.onhashchange=()=>{current=location.hash.replace("#/","")||"home";renderPage()};
