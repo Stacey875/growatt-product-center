@@ -1,9 +1,16 @@
 # Changelog
 
+## V1.6 — PRD & Decision Center
+
+- Added structured PRD and decision register.
+- Added Login Region & No-Plant Troubleshooting PRD.
+- Added device capability-driven UI PRD.
+- Added legacy migration and retirement governance PRD.
+- Added status filters and acceptance criteria.
+- Added standard PRD template.
+- Updated navigation, search index, version labels, and cache keys.
+
 ## V1.5 — Real Content Integration
 
-- Added a dedicated Product Handbook page based on the first four chapters of the New ShinePhone & ShineServer handbook.
-- Added positioning, primary users, build principles, user journeys and product boundaries.
-- Added a searchable compatibility matrix sourced from the real Server/ShinePhone compatibility workbook.
-- Added representative model groups, DTC, scenarios, validation status and feature coverage.
-- Added Knowledge navigation and cache version 1.5.0.
+- Imported handbook core content.
+- Added searchable real compatibility matrix.
